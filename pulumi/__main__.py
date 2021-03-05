@@ -14,9 +14,9 @@ from pulumi_aws.iam import (
 from pulumi_aws.lambda_ import Function, Permission
 from pulumi_aws.s3 import BucketNotification, BucketNotificationLambdaFunctionArgs
 
-from pulumi import AssetArchive, FileArchive, ResourceOptions, get_stack
+from pulumi import FileArchive, ResourceOptions, get_stack, export
 
-TARGET_BUCKET = "alpha-everyone"
+TARGET_BUCKET = "performance-hub-land"
 
 stack = get_stack()
 
@@ -24,8 +24,8 @@ tagger = Tagger(environment_name=stack)
 
 bucket = Bucket(
     resource_name="export",
-    name=f"mojap-hub-exports-{stack}",
-    tags=tagger.create_tags(f"mojap-hub-exports-{stack}"),
+    name="mojap-hub-exports",
+    tags=tagger.create_tags("mojap-hub-exports"),
 )
 
 role = Role(
@@ -42,9 +42,9 @@ role = Role(
             )
         ]
     ).json,
-    name=f"analytical-platform-hub-export-{stack}",
+    name="analytical-platform-hub-export",
     path="/service-role/",
-    tags=tagger.create_tags(f"analytical-platform-hub-export-{stack}"),
+    tags=tagger.create_tags("analytical-platform-hub-export"),
 )
 
 rolePolicy = RolePolicy(
@@ -81,10 +81,10 @@ function = Function(
     description="Export objects from the Analytical Platform to the Hub",
     environment={"variables": {"TARGET_BUCKET": TARGET_BUCKET}},
     handler="export.handler",
-    name=f"analytical-platform-hub-export-{stack}",
+    name="analytical-platform-hub-export",
     role=role.arn,
     runtime="python3.8",
-    tags=tagger.create_tags(f"analytical-platform-hub-export-{stack}"),
+    tags=tagger.create_tags("analytical-platform-hub-export"),
     timeout=60,
 )
 
@@ -135,3 +135,5 @@ bucket_notification = BucketNotification(
     ],
     opts=ResourceOptions(depends_on=[permission]),
 )
+
+export(name="role_arn", value=role.arn)
