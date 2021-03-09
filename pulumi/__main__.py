@@ -14,7 +14,7 @@ from pulumi_aws.iam import (
 from pulumi_aws.lambda_ import Function, Permission
 from pulumi_aws.s3 import BucketNotification, BucketNotificationLambdaFunctionArgs
 
-from pulumi import FileArchive, ResourceOptions, get_stack, export
+from pulumi import FileArchive, ResourceOptions, get_stack, export, Output
 
 TARGET_BUCKET = "performance-hub-land"
 
@@ -108,12 +108,12 @@ for file in files:
     for user in dataset["users"]:
         RolePolicy(
             resource_name=user,
-            policy=bucket.arn.apply(
-                lambda arn: get_policy_document(
+            policy=Output.all(bucket.arn, name).apply(
+                lambda args: get_policy_document(
                     statements=[
                         GetPolicyDocumentStatementArgs(
-                            actions=["s3:PutObject"],
-                            resources=[f"{arn}/{name}/*"],
+                            actions=["s3:PutObject", "s3:PutObjectAcl"],
+                            resources=[f"{args[0]}/{args[1]}/*"],
                         )
                     ]
                 ).json
