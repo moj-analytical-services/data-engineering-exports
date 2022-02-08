@@ -2,7 +2,7 @@ from pathlib import Path
 
 import yaml
 from data_engineering_pulumi_components.aws import Bucket
-from dataengineeringutils3.pulumi import Tagger
+from data_engineering_pulumi_components.utils import Tagger
 from pulumi_aws.iam import (
     GetPolicyDocumentStatementArgs,
     GetPolicyDocumentStatementPrincipalArgs,
@@ -23,9 +23,8 @@ stack = get_stack()
 tagger = Tagger(environment_name=stack)
 
 bucket = Bucket(
-    resource_name="export",
     name="mojap-hub-exports",
-    tags=tagger.create_tags("mojap-hub-exports"),
+    tagger=tagger
 )
 
 role = Role(
