@@ -112,9 +112,17 @@ for file in files:
                 lambda args: get_policy_document(
                     statements=[
                         GetPolicyDocumentStatementArgs(
-                            actions=["s3:PutObject", "s3:PutObjectAcl"],
+                            actions=[
+                                "s3:PutObject",
+                                "s3:PutObjectAcl",
+                                "s3:PutObjectTagging",
+                            ],
                             resources=[f"{args[0]}/{args[1]}/*"],
-                        )
+                        ),
+                        GetPolicyDocumentStatementArgs(
+                            actions=["s3:ListBucket"],
+                            resources=[args[0]],
+                        ),
                     ]
                 ).json
             ),
