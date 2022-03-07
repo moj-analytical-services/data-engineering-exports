@@ -4,7 +4,7 @@ To get started, set up a new virtual environment and `pip install -r requirement
 
 ## Access the Pulumi stack
 
-1. Activate the `restricted-admin@data` AWS role
+1. Activate the `restricted-admin-data` AWS role
 2. Log in to the Pulumi backend with `pulumi login s3://data-engineering-pulumi.analytics.justice.gov.uk`
 3. Run `pulumi stack select` and pick `data-engineering-hub-exports`
 4. Run `pulumi stack` to check you can see what's currently deployed
