@@ -1,8 +1,10 @@
+import json
 from pathlib import Path
+from typing import Dict, List
 
-import yaml
 from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
+from pulumi import FileArchive, ResourceOptions, get_stack, export, Output
 from pulumi_aws.iam import (
     GetPolicyDocumentStatementArgs,
     GetPolicyDocumentStatementPrincipalArgs,
@@ -12,9 +14,38 @@ from pulumi_aws.iam import (
     get_policy_document,
 )
 from pulumi_aws.lambda_ import Function, Permission
-from pulumi_aws.s3 import BucketNotification, BucketNotificationLambdaFunctionArgs
+from pulumi_aws.s3 import (
+    BucketNotification,
+    BucketNotificationLambdaFunctionArgs,
+    BucketPolicy,
+)
+import yaml
 
-from pulumi import FileArchive, ResourceOptions, get_stack, export, Output
+
+def create_get_policy(args) -> Dict[str, str]:
+    bucket_arn = args.pop("bucket_arn")
+    pull_arns = args.pop("pull_arns")
+
+    statements = [
+        {
+            "Effect": "Allow",
+            "Principal": {"AWS": pull_arns},
+            "Action": [
+                "s3:GetObject",
+                "s3:GetObjectAcl",
+                "s3:GetObjectVersion",
+            ],
+            "Resource": bucket_arn + "/*",
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {"AWS": pull_arns},
+            "Action": ["s3:ListBucket"],
+            "Resource": bucket_arn,
+        },
+    ]
+    return json.dumps({"Version": "2012-10-17", "Statement": statements})
+
 
 TARGET_BUCKET = "performance-hub-land"
 
@@ -22,10 +53,7 @@ stack = get_stack()
 
 tagger = Tagger(environment_name=stack)
 
-bucket = Bucket(
-    name="mojap-hub-exports",
-    tagger=tagger
-)
+bucket = Bucket(name="mojap-hub-exports", tagger=tagger)
 
 role = Role(
     resource_name="export",
@@ -97,7 +125,7 @@ permission = Permission(
 )
 
 filter_prefixes = []
-files = list(Path("../datasets").glob("*.yaml"))
+files = list(Path("../push_datasets").glob("*.yaml"))
 
 for file in files:
     with open(file, mode="r") as f:
@@ -144,3 +172,59 @@ bucket_notification = BucketNotification(
 )
 
 export(name="role_arn", value=role.arn)
+
+
+pull_files = list(Path("../pull_datasets").glob("*.yaml"))
+
+for file in pull_files:
+    with open(file, mode="r") as f:
+        dataset = yaml.safe_load(f)
+        name = dataset["name"]
+        pull_arns = dataset["pull_arns"]
+        users = dataset["users"]
+
+    pull_bucket = Bucket(name=f"mojap-{name}", tagger=tagger)
+
+    # Add bucket policy allowing the specified arn to read
+    policy = Output.all(bucket_arn=pull_bucket.arn, pull_arns=pull_arns).apply(
+        create_get_policy
+    )
+
+    BucketPolicy(
+        resource_name=f"{name}-bucket-policy",
+        bucket=pull_bucket.id,
+        policy=policy,
+        opts=ResourceOptions(parent=pull_bucket),
+    )
+
+    # Add role policy for each user
+    for user in users:
+        RolePolicy(
+            resource_name=user,
+            policy=Output.all(pull_bucket.arn).apply(
+                lambda args: get_policy_document(
+                    statements=[
+                        GetPolicyDocumentStatementArgs(
+                            actions=[
+                                "s3:GetObject",
+                                "s3:GetObjectAcl",
+                                "s3:GetObjectVersion",
+                                "s3:DeleteObject",
+                                "s3:DeleteObjectVersion",
+                                "s3:PutObject",
+                                "s3:PutObjectAcl",
+                                "s3:PutObjectTagging",
+                                "s3:RestoreObject",
+                            ],
+                            resources=[f"{args[0]}/*"],
+                        ),
+                        GetPolicyDocumentStatementArgs(
+                            actions=["s3:ListBucket"],
+                            resources=[args[0]],
+                        ),
+                    ]
+                ).json
+            ),
+            role=user,
+            name=f"hub-exports-pull-{name}",
+        )
