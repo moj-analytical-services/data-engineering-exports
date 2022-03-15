@@ -108,7 +108,7 @@ rolePolicyAttachment = RolePolicyAttachment(
 # Lambda function that sends files from export bucket to hub landing bucket
 function = Function(
     resource_name="export",
-    code=FileArchive("./lambda_/export"),
+    code=FileArchive("data-engineering-hub-exports/lambda_/export"),
     description="Export objects from the Analytical Platform to the Hub",
     environment={"variables": {"HUB_LANDING_BUCKET": HUB_LANDING_BUCKET}},
     handler="export.handler",
@@ -131,7 +131,7 @@ permission = Permission(
 
 # Gather push config files
 filter_prefixes = []
-push_config_files = list(Path("../push_datasets").glob("*.yaml"))
+push_config_files = list(Path("push_datasets").glob("*.yaml"))
 
 # For each config, create a role policy for each user to let them add to bucket
 # TODO: let users appear in multiple configs without overwriting
@@ -183,7 +183,7 @@ export(name="role_arn", value=role.arn)
 
 # PULL INFRASTRUCTURE
 # Let an external role get files from a bucket
-pull_config_files = list(Path("../pull_datasets").glob("*.yaml"))
+pull_config_files = list(Path("pull_datasets").glob("*.yaml"))
 
 # For each config, create a bucket
 for file in pull_config_files:
