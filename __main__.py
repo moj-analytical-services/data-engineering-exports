@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
@@ -47,14 +47,15 @@ def create_get_policy(args) -> Dict[str, str]:
     return json.dumps({"Version": "2012-10-17", "Statement": statements})
 
 
-TARGET_BUCKET = "performance-hub-land"
+# PUSH INFRASTRUCTURE
+# When files are added to a bucket, move them to the Performance Hub
+HUB_LANDING_BUCKET = "performance-hub-land"
 
 stack = get_stack()
-
 tagger = Tagger(environment_name=stack)
+export_bucket = Bucket(name="mojap-hub-exports", tagger=tagger)
 
-bucket = Bucket(name="mojap-hub-exports", tagger=tagger)
-
+# Export role
 role = Role(
     resource_name="export",
     assume_role_policy=get_policy_document(
@@ -74,9 +75,10 @@ role = Role(
     tags=tagger.create_tags("analytical-platform-hub-export"),
 )
 
+# Export role policy
 rolePolicy = RolePolicy(
     resource_name="export",
-    policy=bucket.arn.apply(
+    policy=export_bucket.arn.apply(
         lambda arn: get_policy_document(
             statements=[
                 GetPolicyDocumentStatementArgs(
@@ -85,7 +87,7 @@ rolePolicy = RolePolicy(
                 ),
                 GetPolicyDocumentStatementArgs(
                     actions=["s3:PutObject", "s3:PutObjectAcl"],
-                    resources=[f"arn:aws:s3:::{TARGET_BUCKET}/*"],
+                    resources=[f"arn:aws:s3:::{HUB_LANDING_BUCKET}/*"],
                 ),
             ]
         ).json
@@ -95,6 +97,7 @@ rolePolicy = RolePolicy(
     opts=ResourceOptions(parent=role),
 )
 
+# Export role policy attachment
 rolePolicyAttachment = RolePolicyAttachment(
     resource_name="export",
     policy_arn="arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
@@ -102,11 +105,12 @@ rolePolicyAttachment = RolePolicyAttachment(
     opts=ResourceOptions(parent=role),
 )
 
+# Lambda function that sends files from export bucket to hub landing bucket
 function = Function(
     resource_name="export",
     code=FileArchive("./lambda_/export"),
     description="Export objects from the Analytical Platform to the Hub",
-    environment={"variables": {"TARGET_BUCKET": TARGET_BUCKET}},
+    environment={"variables": {"HUB_LANDING_BUCKET": HUB_LANDING_BUCKET}},
     handler="export.handler",
     name="analytical-platform-hub-export",
     role=role.arn,
@@ -115,19 +119,23 @@ function = Function(
     timeout=60,
 )
 
+# Permissions for the Lambda function
 permission = Permission(
     resource_name="export",
     action="lambda:InvokeFunction",
     function=function.name,
     principal="s3.amazonaws.com",
-    source_arn=bucket.arn,
+    source_arn=export_bucket.arn,
     opts=ResourceOptions(parent=function),
 )
 
+# Gather push config files
 filter_prefixes = []
-files = list(Path("../push_datasets").glob("*.yaml"))
+push_config_files = list(Path("../push_datasets").glob("*.yaml"))
 
-for file in files:
+# For each config, create a role policy for each user to let them add to bucket
+# TODO: let users appear in multiple configs without overwriting
+for file in push_config_files:
     with open(file, mode="r") as f:
         dataset = yaml.safe_load(f)
         name = dataset["name"]
@@ -135,7 +143,7 @@ for file in files:
     for user in dataset["users"]:
         RolePolicy(
             resource_name=user,
-            policy=Output.all(bucket.arn, name).apply(
+            policy=Output.all(export_bucket.arn, name).apply(
                 lambda args: get_policy_document(
                     statements=[
                         GetPolicyDocumentStatementArgs(
@@ -159,7 +167,7 @@ for file in files:
 
 bucket_notification = BucketNotification(
     resource_name="export",
-    bucket=bucket.id,
+    bucket=export_bucket.id,
     lambda_functions=[
         BucketNotificationLambdaFunctionArgs(
             events=["s3:ObjectCreated:*"],
@@ -173,23 +181,27 @@ bucket_notification = BucketNotification(
 
 export(name="role_arn", value=role.arn)
 
+# PULL INFRASTRUCTURE
+# Let an external role get files from a bucket
+pull_config_files = list(Path("../pull_datasets").glob("*.yaml"))
 
-pull_files = list(Path("../pull_datasets").glob("*.yaml"))
-
-for file in pull_files:
+# For each config, create a bucket
+for file in pull_config_files:
     with open(file, mode="r") as f:
         dataset = yaml.safe_load(f)
         name = dataset["name"]
         pull_arns = dataset["pull_arns"]
         users = dataset["users"]
 
-    pull_bucket = Bucket(name=f"mojap-{name}", tagger=tagger)
+    pull_bucket = Bucket(
+        name=f"mojap-{name}",
+        tagger=tagger,
+    )
 
     # Add bucket policy allowing the specified arn to read
     policy = Output.all(bucket_arn=pull_bucket.arn, pull_arns=pull_arns).apply(
         create_get_policy
     )
-
     BucketPolicy(
         resource_name=f"{name}-bucket-policy",
         bucket=pull_bucket.id,
