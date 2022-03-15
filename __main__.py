@@ -1,6 +1,4 @@
-import json
 from pathlib import Path
-from typing import Dict
 
 from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
@@ -21,30 +19,7 @@ from pulumi_aws.s3 import (
 )
 import yaml
 
-
-def create_get_policy(args) -> Dict[str, str]:
-    bucket_arn = args.pop("bucket_arn")
-    pull_arns = args.pop("pull_arns")
-
-    statements = [
-        {
-            "Effect": "Allow",
-            "Principal": {"AWS": pull_arns},
-            "Action": [
-                "s3:GetObject",
-                "s3:GetObjectAcl",
-                "s3:GetObjectVersion",
-            ],
-            "Resource": bucket_arn + "/*",
-        },
-        {
-            "Effect": "Allow",
-            "Principal": {"AWS": pull_arns},
-            "Action": ["s3:ListBucket"],
-            "Resource": bucket_arn,
-        },
-    ]
-    return json.dumps({"Version": "2012-10-17", "Statement": statements})
+import data_engineering_hub_exports.policies as policies
 
 
 # PUSH INFRASTRUCTURE
@@ -108,7 +83,7 @@ rolePolicyAttachment = RolePolicyAttachment(
 # Lambda function that sends files from export bucket to hub landing bucket
 function = Function(
     resource_name="export",
-    code=FileArchive("data-engineering-hub-exports/lambda_/export"),
+    code=FileArchive("data_engineering_hub_exports/lambda_/export"),
     description="Export objects from the Analytical Platform to the Hub",
     environment={"variables": {"HUB_LANDING_BUCKET": HUB_LANDING_BUCKET}},
     handler="export.handler",
@@ -200,7 +175,7 @@ for file in pull_config_files:
 
     # Add bucket policy allowing the specified arn to read
     policy = Output.all(bucket_arn=pull_bucket.arn, pull_arns=pull_arns).apply(
-        create_get_policy
+        policies.create_get_policy
     )
     BucketPolicy(
         resource_name=f"{name}-bucket-policy",
