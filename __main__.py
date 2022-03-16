@@ -19,7 +19,7 @@ from pulumi_aws.s3 import (
 )
 import yaml
 
-import data_engineering_hub_exports.policies as policies
+import data_engineering_exports.policies as policies
 
 
 # PUSH INFRASTRUCTURE
@@ -83,7 +83,7 @@ rolePolicyAttachment = RolePolicyAttachment(
 # Lambda function that sends files from export bucket to hub landing bucket
 function = Function(
     resource_name="export",
-    code=FileArchive("data_engineering_hub_exports/lambda_/export"),
+    code=FileArchive("data_engineering_exports/lambda_/export"),
     description="Export objects from the Analytical Platform to the Hub",
     environment={"variables": {"HUB_LANDING_BUCKET": HUB_LANDING_BUCKET}},
     handler="export.handler",
@@ -175,7 +175,7 @@ for file in pull_config_files:
 
     # Add bucket policy allowing the specified arn to read
     policy = Output.all(bucket_arn=pull_bucket.arn, pull_arns=pull_arns).apply(
-        policies.create_get_policy
+        policies.create_pull_bucket_policy
     )
     BucketPolicy(
         resource_name=f"{name}-bucket-policy",
@@ -189,28 +189,7 @@ for file in pull_config_files:
         RolePolicy(
             resource_name=user,
             policy=Output.all(pull_bucket.arn).apply(
-                lambda args: get_policy_document(
-                    statements=[
-                        GetPolicyDocumentStatementArgs(
-                            actions=[
-                                "s3:GetObject",
-                                "s3:GetObjectAcl",
-                                "s3:GetObjectVersion",
-                                "s3:DeleteObject",
-                                "s3:DeleteObjectVersion",
-                                "s3:PutObject",
-                                "s3:PutObjectAcl",
-                                "s3:PutObjectTagging",
-                                "s3:RestoreObject",
-                            ],
-                            resources=[f"{args[0]}/*"],
-                        ),
-                        GetPolicyDocumentStatementArgs(
-                            actions=["s3:ListBucket"],
-                            resources=[args[0]],
-                        ),
-                    ]
-                ).json
+                lambda args: policies.create_read_write_role_policy(args)
             ),
             role=user,
             name=f"hub-exports-pull-{name}",

@@ -6,7 +6,7 @@ from dataengineeringutils3.s3 import read_json_from_s3
 session = boto3.Session()
 s3 = session.client("s3")
 
-bucket = "mojap-incentives-dev"
+bucket = "mojap-pull-permission-test"
 filename = "test_file.json"
 
 contents = s3.list_objects_v2(Bucket=bucket)
