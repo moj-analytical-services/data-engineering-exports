@@ -24,7 +24,7 @@ import data_engineering_exports.policies as policies
 
 # PUSH INFRASTRUCTURE
 # When files are added to a bucket, move them to the Performance Hub
-HUB_LANDING_BUCKET = "performance-hub-land"
+TARGET_BUCKET = "performance-hub-land"
 
 stack = get_stack()
 tagger = Tagger(environment_name=stack)
@@ -62,7 +62,7 @@ rolePolicy = RolePolicy(
                 ),
                 GetPolicyDocumentStatementArgs(
                     actions=["s3:PutObject", "s3:PutObjectAcl"],
-                    resources=[f"arn:aws:s3:::{HUB_LANDING_BUCKET}/*"],
+                    resources=[f"arn:aws:s3:::{TARGET_BUCKET}/*"],
                 ),
             ]
         ).json
@@ -85,7 +85,7 @@ function = Function(
     resource_name="export",
     code=FileArchive("data_engineering_exports/lambda_/export"),
     description="Export objects from the Analytical Platform to the Hub",
-    environment={"variables": {"HUB_LANDING_BUCKET": HUB_LANDING_BUCKET}},
+    environment={"variables": {"TARGET_BUCKET": TARGET_BUCKET}},
     handler="export.handler",
     name="analytical-platform-hub-export",
     role=role.arn,
