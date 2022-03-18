@@ -1,6 +1,6 @@
 # Data engineering exports
 
-This repository lets you export data from the Analytical Platform to other platforms. For now this means the HMPPS Performance Hub or the Ministry of Justice Cloud Platform. Message us on the #ask-data-engineering Slack channel if you want to connect to somewhere selse. 
+This repository lets you export data from the Analytical Platform to other platforms. For now, this means the HMPPS Performance Hub or the Ministry of Justice Cloud Platform. Message us on the #ask-data-engineering Slack channel if you want to connect to somewhere else. 
 
 ## Ways to export
 
