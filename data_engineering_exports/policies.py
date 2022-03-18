@@ -63,8 +63,9 @@ def create_read_write_role_policy(args: Dict[str, str]) -> AwaitableGetPolicyDoc
 
     Parameters
     ----------
-    args : list
-        Should contain 1 item: the Arn of the bucket to attach the policy to.
+    args : dict
+        Should contain 1 key:
+        - bucket_arn (str): Arn of the bucket to attach the policy to.
 
     Returns
     -------
