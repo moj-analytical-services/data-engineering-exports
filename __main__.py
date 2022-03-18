@@ -174,23 +174,24 @@ for file in pull_config_files:
     )
 
     # Add bucket policy allowing the specified arn to read
-    policy = Output.all(bucket_arn=pull_bucket.arn, pull_arns=pull_arns).apply(
+    bucket_policy = Output.all(bucket_arn=pull_bucket.arn, pull_arns=pull_arns).apply(
         policies.create_pull_bucket_policy
     )
     BucketPolicy(
         resource_name=f"{name}-bucket-policy",
         bucket=pull_bucket.id,
-        policy=policy,
+        policy=bucket_policy.json,
         opts=ResourceOptions(parent=pull_bucket),
     )
 
     # Add role policy for each user
+    role_policy = Output.all(bucket_arn=pull_bucket.arn).apply(
+        policies.create_read_write_role_policy
+    )
     for user in users:
         RolePolicy(
             resource_name=user,
-            policy=Output.all(pull_bucket.arn).apply(
-                lambda args: policies.create_read_write_role_policy(args)
-            ),
+            policy=role_policy.json,
             role=user,
             name=f"hub-exports-pull-{name}",
         )

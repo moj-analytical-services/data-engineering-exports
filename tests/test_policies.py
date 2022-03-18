@@ -1,34 +1,63 @@
-import json
-
+from pulumi import Output
 import pulumi.runtime
 
-from data_engineering_exports.policies import create_pull_bucket_policy, create_read_write_role_policy
+from data_engineering_exports.policies import (
+    create_pull_bucket_policy,
+    create_read_write_role_policy,
+)
+
+
+def assert_pulumi_output_equals_expected(args):
+    output, expected = args
+    assert output == expected
 
 
 @pulumi.runtime.test
 def test_create_pull_bucket_policy():
-    result = create_pull_bucket_policy({"bucket_arn": "test-bucket", "pull_arns": ["arn-one", "arn-two"]})
-    expected = json.dumps({"Version": "2012-10-17", "Statement": [
+    """Checks policy statements for a bucket that lets external roles to read from it."""
+    policy = create_pull_bucket_policy(
+        {"bucket_arn": "test-bucket", "pull_arns": ["arn-one", "arn-two"]}
+    )
+    expected = [
         {
-            "Effect": "Allow",
-            "Principal": {"AWS": ["arn-one", "arn-two"]},
-            "Action": [
+            "actions": ["s3:GetObject", "s3:GetObjectAcl", "s3:GetObjectVersion"],
+            "principals": [{"identifiers": ["arn-one", "arn-two"], "type": "AWS"}],
+            "resources": ["test-bucket/*"],
+        },
+        {
+            "actions": ["s3:ListBucket"],
+            "principals": [{"identifiers": ["arn-one", "arn-two"], "type": "AWS"}],
+            "resources": ["test-bucket"],
+        },
+    ]
+    return Output.all(policy.statements, expected).apply(
+        assert_pulumi_output_equals_expected
+    )
+
+
+@pulumi.runtime.test
+def test_create_read_write_role_policy():
+    policy = create_read_write_role_policy({"bucket_arn": "test-bucket"})
+    expected = [
+        {
+            "actions": [
                 "s3:GetObject",
                 "s3:GetObjectAcl",
                 "s3:GetObjectVersion",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion",
+                "s3:PutObject",
+                "s3:PutObjectAcl",
+                "s3:PutObjectTagging",
+                "s3:RestoreObject",
             ],
-            "Resource": "test-bucket/*",
+            "resources": ["test-bucket/*"],
         },
         {
-            "Effect": "Allow",
-            "Principal": {"AWS": ["arn-one", "arn-two"]},
-            "Action": ["s3:ListBucket"],
-            "Resource": "test-bucket",
+            "actions": ["s3:ListBucket"],
+            "resources": ["test-bucket"],
         },
     ]
-    })
-    assert result == expected
-
-
-def test_create_read_write_role_policy():
-    assert not create_read_write_role_policy()
+    return Output.all(policy.statements, expected).apply(
+        assert_pulumi_output_equals_expected
+    )

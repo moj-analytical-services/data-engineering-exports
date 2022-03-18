@@ -3,30 +3,33 @@ from typing import Dict, List
 from pulumi_aws.iam import (
     GetPolicyDocumentStatementArgs,
     GetPolicyDocumentStatementPrincipalArgs,
+)
+from pulumi_aws.iam.get_policy_document import (
     get_policy_document,
+    AwaitableGetPolicyDocumentResult,
 )
 
 
-def create_pull_bucket_policy(args: Dict[str, str]) -> Dict[str, str]:
+def create_pull_bucket_policy(args: Dict[str, str]) -> AwaitableGetPolicyDocumentResult:
     """Create policy for a bucket to permit get access for a specific list of Arns.
     The Arns can be from another account.
 
     Parameters
     ----------
     args : dict
-        Should contain 2 keys: 
+        Should contain 2 keys:
         - bucket_arn (str): Arn of the bucket to attach the policy to.
         - pull_arns (list): list of Arns that should be allowed to read from the bucket.
 
     Returns
     -------
-    dict
-        Json of the policy document.
+    AwaitableGetPolicyDocumentResult
+        Pulumi output of the get_policy_document function.
     """
     bucket_arn = args.pop("bucket_arn")
     pull_arns = args.pop("pull_arns")
 
-    policy = get_policy_document(
+    bucket_policy = get_policy_document(
         statements=[
             GetPolicyDocumentStatementArgs(
                 actions=[
@@ -51,11 +54,11 @@ def create_pull_bucket_policy(args: Dict[str, str]) -> Dict[str, str]:
                 resources=[bucket_arn],
             ),
         ]
-    ).json
-    return policy
+    )
+    return bucket_policy
 
 
-def create_read_write_role_policy(args: List[str]) -> Dict[str, str]:
+def create_read_write_role_policy(args: List[str]) -> AwaitableGetPolicyDocumentResult:
     """Create role policy that gives get, put, delete and restore access to a bucket.
 
     Parameters
@@ -65,9 +68,11 @@ def create_read_write_role_policy(args: List[str]) -> Dict[str, str]:
 
     Returns
     -------
-    dict
-        Json of the policy document.
+    AwaitableGetPolicyDocumentResult
+        Pulumi output of the get_policy_document function.
     """
+    bucket_arn = args.pop("bucket_arn")
+
     role_policy = get_policy_document(
         statements=[
             GetPolicyDocumentStatementArgs(
@@ -82,12 +87,12 @@ def create_read_write_role_policy(args: List[str]) -> Dict[str, str]:
                     "s3:PutObjectTagging",
                     "s3:RestoreObject",
                 ],
-                resources=[f"{args[0]}/*"],
+                resources=[f"{bucket_arn}/*"],
             ),
             GetPolicyDocumentStatementArgs(
                 actions=["s3:ListBucket"],
-                resources=[args[0]],
+                resources=[bucket_arn],
             ),
         ]
     )
-    return role_policy.json
+    return role_policy
