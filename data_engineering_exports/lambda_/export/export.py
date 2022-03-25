@@ -10,8 +10,9 @@ def handler(event, context):
 
     source_bucket = record["s3"]["bucket"]["name"]
     source_key = record["s3"]["object"]["key"]
+    source_prefix = source_key.split("/")[0]
 
-    target_bucket = os.environ["TARGET_BUCKET"]
+    target_bucket = os.environ[source_prefix.upper()]
     target_key = source_key
 
     client.copy_object(
