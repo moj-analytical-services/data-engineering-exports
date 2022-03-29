@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 from pulumi_aws.iam import (
     GetPolicyDocumentStatementArgs,
@@ -58,7 +58,9 @@ def create_pull_bucket_policy(args: Dict[str, str]) -> AwaitableGetPolicyDocumen
     return bucket_policy
 
 
-def create_read_write_role_policy(args: Dict[str, str]) -> AwaitableGetPolicyDocumentResult:
+def create_read_write_role_policy(
+    args: Dict[str, str]
+) -> AwaitableGetPolicyDocumentResult:
     """Create role policy that gives get, put, delete and restore access to a bucket.
 
     Parameters
