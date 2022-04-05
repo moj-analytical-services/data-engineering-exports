@@ -1,0 +1,25 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.1.0
+  hooks:
+  - id: check-added-large-files
+  - id: check-case-conflict
+  - id: check-json
+  - id: check-merge-conflict
+  - id: check-yaml
+  - id: end-of-file-fixer
+  - id: no-commit-to-branch
+  - id: requirements-txt-fixer
+  - id: trailing-whitespace
+
+- repo: https://github.com/psf/black
+  rev: 22.3.0
+  hooks:
+  - id: black
+    language_version: python
+
+-   repo: https://github.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
+    -   id: flake8
+        args: [--max-line-length=88, --max-complexity=10, "--ignore=E402,F401,W503"]

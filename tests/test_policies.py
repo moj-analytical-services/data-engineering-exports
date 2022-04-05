@@ -14,7 +14,7 @@ def assert_pulumi_output_equals_expected(args):
 
 @pulumi.runtime.test
 def test_create_pull_bucket_policy():
-    """Checks policy statements for a bucket that lets external roles to read from it."""
+    """Checks policy statements for a bucket that lets external roles read from it."""
     policy = create_pull_bucket_policy(
         {"bucket_arn": "test-bucket", "pull_arns": ["arn-one", "arn-two"]}
     )
