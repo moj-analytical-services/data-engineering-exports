@@ -2,6 +2,8 @@
 
 To get started, set up a new virtual environment and `pip install -r requirements.txt`.
 
+Then install the pre-commit hooks with `pre-commit install`.
+
 ## Access the Pulumi stack
 
 1. Activate the `restricted-admin-data` AWS role
