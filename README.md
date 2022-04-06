@@ -1,6 +1,6 @@
 # Data engineering exports
 
-This repository lets you export data from the Analytical Platform to other platforms. For now, this means the HMPPS Performance Hub or the Ministry of Justice Cloud Platform. Message us on the #ask-data-engineering Slack channel if you want to connect to somewhere else. 
+This repository lets you export data from the Analytical Platform to other platforms. For now, this means the HMPPS Performance Hub or the Ministry of Justice Cloud Platform. Message us on the #ask-data-engineering Slack channel if you want to connect to somewhere else.
 
 ## Ways to export
 
@@ -9,7 +9,7 @@ There are 2 ways to export your data:
 - a 'push bucket', which will send any data you put in it to a bucket in another account
 - a 'pull bucket', which is on the Analytical Platform but whose contents are visible to a specific external user
 
-Both are fine in principle - your team may prefer one or the other. Contact us on the #ask-data-engineering Slack channel to discuss it. 
+Both are fine in principle - your team may prefer one or the other. Contact us on the #ask-data-engineering Slack channel to discuss it.
 
 At the moment pull buckets only work if the other platform is also on Amazon Web Services. It isn't currently an option for Microsoft Azure or Google Cloud Platform. But contact us if you need one of these - we can add it, it just hasn't been needed yet.
 
@@ -22,7 +22,7 @@ This guide uses an example dataset called <<new_project>>. Wherever this appears
 
 Only use lower case and underscores in your dataset name.
 
-1. Create a new branch in this repository called either `push_dataset/<<new_project>>` or `pull_dataset/<<new_project>>` 
+1. Create a new branch in this repository called either `push_dataset/<<new_project>>` or `pull_dataset/<<new_project>>`
 2. Create a new file in either `pull_datasets` or `push_datasets` called `new_project.yaml`
 3. Add your project name and list of Analytical Platform usernames to the new file, like this:
 
@@ -33,7 +33,7 @@ Only use lower case and underscores in your dataset name.
     - alpha_user_two
 ```
 
-4. For a pull dataset, you must also add the Amazon Web Services 'Arns' of the roles that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this: 
+4. For a pull dataset, you must also add the Amazon Web Services 'Arns' of the roles that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this:
 
 ``` yaml
   name: new_project
