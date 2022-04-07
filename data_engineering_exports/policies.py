@@ -1,13 +1,16 @@
-from typing import Dict
+from typing import Dict, List
 
+from pulumi import Output
 from pulumi_aws.iam import (
     GetPolicyDocumentStatementArgs,
     GetPolicyDocumentStatementPrincipalArgs,
+    RolePolicy,
 )
 from pulumi_aws.iam.get_policy_document import (
     get_policy_document,
     AwaitableGetPolicyDocumentResult,
 )
+from data_engineering_pulumi_components.aws import Bucket
 
 
 def create_pull_bucket_policy(args: Dict[str, str]) -> AwaitableGetPolicyDocumentResult:
@@ -99,3 +102,31 @@ def create_read_write_role_policy(
         ]
     )
     return role_policy
+
+
+class WriteToExportBucketRolePolicy:
+    def __init__(self, username: str, export_bucket: Bucket, prefixes: List[str]):
+        """Let a user put items in specific parts of the export bucket."""
+        self._role_policy = RolePolicy(
+            resource_name=username,
+            policy=Output.all(export_bucket.arn, prefixes).apply(
+                lambda args: get_policy_document(
+                    statements=[
+                        GetPolicyDocumentStatementArgs(
+                            actions=[
+                                "s3:PutObject",
+                                "s3:PutObjectAcl",
+                                "s3:PutObjectTagging",
+                            ],
+                            resources=[f"{args[0]}/{prefix}/*" for prefix in args[1]],
+                        ),
+                        GetPolicyDocumentStatementArgs(
+                            actions=["s3:ListBucket"],
+                            resources=[args[0]],
+                        ),
+                    ]
+                ).json
+            ),
+            role=username,
+            name="hub-exports",
+        )
