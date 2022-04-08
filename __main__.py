@@ -1,12 +1,8 @@
 from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
-from data_engineering_pulumi_components.aws.lambdas.move_object_function import (
-    MoveObjectFunction,
-)
 from pulumi import ResourceOptions, get_stack, export, Output
 from pulumi_aws.iam import RolePolicy
 from pulumi_aws.s3 import BucketPolicy
-import yaml
 
 import data_engineering_exports.policies as policies
 import data_engineering_exports.utils as utils
@@ -20,19 +16,14 @@ export_bucket = Bucket(name="mojap-hub-exports", tagger=tagger)
 
 # Collect data from the config files
 push_config_files = utils.list_yaml_files("push_datasets")
-datasets_to_buckets, users = utils.load_push_config_data(push_config_files)
-target_buckets = set(datasets_to_buckets.values())
+datasets, users = utils.get_datasets_and_users(push_config_files, export_bucket, tagger)
 
-# Lambda function for each dataset
-for dataset, target_bucket in datasets_to_buckets.items():
-    move_object_function = MoveObjectFunction(
-        destination_bucket=target_bucket,
-        name=f"export-{dataset}",
-        source_bucket=export_bucket,
-        tagger=tagger,
-        prefix=dataset,
+# Create move or copy Lambda function for each dataset
+for dataset in datasets:
+    dataset.build_lambda_function()
+    export(
+        name=f"{dataset.name}_export_role_arn", value=dataset.lambda_function._role.arn
     )
-    export(name=f"{dataset}-export-role-arn", value=move_object_function._role.arn)
 
 # For each user, create a role policy to let them add to the export bucket
 for user, prefixes in users.items():
@@ -44,11 +35,11 @@ pull_config_files = utils.list_yaml_files("pull_datasets")
 
 # For each config, create a bucket
 for file in pull_config_files:
-    with open(file, mode="r") as f:
-        dataset = yaml.safe_load(f)
-        name = dataset["name"]
-        pull_arns = dataset["pull_arns"]
-        users = dataset["users"]
+    dataset = utils.load_yaml(file)
+
+    name = dataset["name"]
+    pull_arns = dataset["pull_arns"]
+    users = dataset["users"]
 
     pull_bucket = Bucket(
         name=f"mojap-{name}",
