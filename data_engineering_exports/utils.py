@@ -6,7 +6,7 @@ import yaml
 from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
 
-from data_engineering_exports.policies import PushExportDataset
+from data_engineering_exports.infrastructure import PushExportDataset
 
 
 def list_yaml_files(folder_name: str) -> List[Path]:

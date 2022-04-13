@@ -22,7 +22,10 @@ from pulumi_aws.iam.get_policy_document import (
 
 class PushExportDataset:
     def __init__(self, config: dict, export_bucket: Bucket, tagger: Tagger):
-        """Load all the details of a push dataset. Has no initial lambda_function.
+        """Load the details of a push dataset from its config.
+
+        Use build_lambda_function method to create the Lambda function that pushes data
+        from the export bucket to the target bucket.
 
         Parameters
         ----------
@@ -74,7 +77,15 @@ class WriteToExportBucketRolePolicy:
     def __init__(self, username: str, export_bucket: Bucket, prefixes: List[str]):
         """Let a user put items in specific parts of the export bucket.
 
-        NEEDS DOCS
+        Parameters
+        ----------
+        username : str
+            Analytical Platform username (including the 'alpha_' prefix) of the person
+            who should be allowed to write to the specified part of the export bucket.
+        export_bucket : Bucket
+            The bucket the user should be allowed to write to.
+        prefixes : list
+            List of the subfolders in the bucket the user can write to.
         """
         self._role_policy = RolePolicy(
             resource_name=username,

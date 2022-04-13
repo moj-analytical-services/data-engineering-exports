@@ -1,9 +1,10 @@
 from pulumi import Output
 import pulumi.runtime
 
-from data_engineering_exports.policies import (
+from data_engineering_exports.infrastructure import (
     create_pull_bucket_policy,
     create_read_write_role_policy,
+    WriteToExportBucketRolePolicy,
 )
 
 
@@ -12,9 +13,18 @@ def assert_pulumi_output_equals_expected(args):
     assert output == expected
 
 
+def test_push_export_dataset():
+    """"""
+
+
+def test_write_to_export_bucket_role_policy():
+    """"""
+    WriteToExportBucketRolePolicy()
+
+
 @pulumi.runtime.test
 def test_create_pull_bucket_policy():
-    """Checks policy statements for a bucket that lets external roles to read from it."""
+    """Checks policy statements for a bucket that lets external roles read from it."""
     policy = create_pull_bucket_policy(
         {"bucket_arn": "test-bucket", "pull_arns": ["arn-one", "arn-two"]}
     )

@@ -4,7 +4,7 @@ from pulumi import ResourceOptions, get_stack, export, Output
 from pulumi_aws.iam import RolePolicy
 from pulumi_aws.s3 import BucketPolicy
 
-import data_engineering_exports.policies as policies
+import data_engineering_exports.infrastructure as infrastructure
 import data_engineering_exports.utils as utils
 
 
@@ -27,7 +27,9 @@ for dataset in datasets:
 
 # For each user, create a role policy to let them add to the export bucket
 for user, prefixes in users.items():
-    role_policy = policies.WriteToExportBucketRolePolicy(user, export_bucket, prefixes)
+    role_policy = infrastructure.WriteToExportBucketRolePolicy(
+        user, export_bucket, prefixes
+    )
 
 # PULL INFRASTRUCTURE
 # Let an external role get files from a bucket
@@ -48,7 +50,7 @@ for file in pull_config_files:
 
     # Add bucket policy allowing the specified arn to read
     bucket_policy = Output.all(bucket_arn=pull_bucket.arn, pull_arns=pull_arns).apply(
-        policies.create_pull_bucket_policy
+        infrastructure.create_pull_bucket_policy
     )
     BucketPolicy(
         resource_name=f"{name}-bucket-policy",
@@ -59,7 +61,7 @@ for file in pull_config_files:
 
     # Add role policy for each user
     role_policy = Output.all(bucket_arn=pull_bucket.arn).apply(
-        policies.create_read_write_role_policy
+        infrastructure.create_read_write_role_policy
     )
     for user in users:
         RolePolicy(
