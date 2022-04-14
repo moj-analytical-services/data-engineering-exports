@@ -1,25 +1,15 @@
 from pulumi import Output
 import pulumi.runtime
 
-from data_engineering_exports.infrastructure import (
+from data_engineering_exports.pull import (
     create_pull_bucket_policy,
     create_read_write_role_policy,
-    WriteToExportBucketRolePolicy,
 )
 
 
 def assert_pulumi_output_equals_expected(args):
     output, expected = args
     assert output == expected
-
-
-def test_push_export_dataset():
-    """"""
-
-
-def test_write_to_export_bucket_role_policy():
-    """"""
-    WriteToExportBucketRolePolicy()
 
 
 @pulumi.runtime.test

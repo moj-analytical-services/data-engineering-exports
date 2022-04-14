@@ -1,6 +1,7 @@
 from typing import Tuple
 
 import pulumi
+import pytest
 
 
 class Mocks(pulumi.runtime.Mocks):
@@ -17,6 +18,14 @@ class Mocks(pulumi.runtime.Mocks):
             return args.args
         else:
             return {}
+
+
+@pytest.fixture(scope="module")
+def yaml_file_list():
+    return [
+        "tests/data/test.yaml",
+        "tests/data/test_2.yaml",
+    ]
 
 
 pulumi.runtime.set_mocks(Mocks())
