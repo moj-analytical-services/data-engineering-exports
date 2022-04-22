@@ -26,15 +26,19 @@ class DatasetsNotLoadedError(Exception):
 
 
 class PushExportDatasets:
-    """Load all push dataset details from a list of yaml filepaths.
+    """Hold information about push datasets, starting from a list of yaml filepaths.
+    Use methods to load those files and create AWS resources based on their data:
 
-    Then create AWS resources based on those details:
-
-    -
+    - extract user and dataset information from yaml files using load_datasets_and_users
+    - create a Lambda function (and associated infrastructure) for each dataset with
+      build_lambda_functions
+    - add a role policy to each user with build_role_policies - this gives permissions
+      to write to the relevant prefix for each of the datasets that include their name
     """
 
     def __init__(self, config_paths: List[Path], export_bucket: Bucket, tagger: Tagger):
-        """Extract information from a collection of push dataset yaml files.
+        """Store a list of relevant yaml files, then set export_bucket and tagger.
+        At this point, read no config files and create no AWS resources.
 
         Parameters
         ----------
@@ -44,25 +48,20 @@ class PushExportDatasets:
             The bucket the data will be exported from.
         tagger : Tagger
             A Tagger object from data-engineering-pulumi-components.utils
-
-        Returns
-        -------
-        tuple
-            First item is a list of PushExportDatasets.
-
-            Second item is a dictionary where keys are usernames and values are lists
-            of project names for that user.
         """
         self.config_paths = config_paths
         self.export_bucket = export_bucket
         self.tagger = tagger
-        self.datasets = None
-        self.lambdas = None
-        self.users = None
-        self.role_policies = None
+        self.datasets = None  # Added with load_datasets_and_users
+        self.lambdas = None  # Added with build_lambda_functions
+        self.users = None  # Added with load_datasets_and_users
+        self.role_policies = None  # Added with build_role_policies
 
     def load_datasets_and_users(self):
-        """"""
+        """Read the yaml config files and store:
+        - a list of PushExportDataset objects, one for each dataset
+        - a dictionary of usernames, each with a list of datasets they can access
+        """
         self.datasets = []
         self.users = defaultdict(list)
 
@@ -76,13 +75,14 @@ class PushExportDatasets:
                 self.users[user].append(dataset.name)
 
     def build_lambda_functions(self):
-        """ """
+        """Create a Lambda function for each dataset, using the datasets'
+        build_lambda_function methods."""
         if self.datasets:
-            self.lambdas = []
+            self.lambdas = []  # Empty the list first if run for a second time
             for dataset in self.datasets:
                 self.lambdas.append(dataset.build_lambda_function())
-                export(
-                    name=f"{dataset.name}_export_role_arn",
+                export(  # Have Pulumi export the arn of the role for each Lambda
+                    name=f"{dataset.name}_lambda_role_arn",
                     value=dataset.lambda_function._role.arn,
                 )
         else:
@@ -91,7 +91,9 @@ class PushExportDatasets:
             )
 
     def build_role_policies(self):
-        """ """
+        """Create a role policy for each username mentioned in the datasets. For each
+        dataset that mentions a user, they will get permission to write to a specific
+        prefix of the export bucket."""
         if self.users:
             self.role_policies = [
                 WriteToExportBucketRolePolicy(user, self.export_bucket, prefixes)
@@ -104,8 +106,8 @@ class PushExportDatasets:
 
 
 class PushExportDataset:
-    """Structure that defines a push dataset, including its name, export and target
-    buckets, users, tagger, and whether or not to keep files after copying them.
+    """Define a push dataset, including its name, export and target buckets, users,
+    tagger, and whether to keep files after copying them (default to deleting them).
 
     Use the .build_lambda_function() method to create a Lambda function based on the
     details of the dataset. The lambda function will move or copy files from the export
@@ -140,7 +142,7 @@ class PushExportDataset:
         self.export_bucket = export_bucket
         self.target_bucket = config["target_bucket"]
         self.users = config["users"]
-        self.keep_files = config["keep_files"]
+        self.keep_files = config.get("keep_files", False)  # optional - default to False
         self.tagger = tagger
         self.lambda_function = None
 
