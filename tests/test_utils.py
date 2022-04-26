@@ -10,6 +10,7 @@ def test_load_yaml():
     content = load_yaml("tests/data/test_2.yaml")
     assert content == {
         "name": "test_dataset_2",
+        "keep_files": True,
         "target_bucket": "test-bucket-2",
         "users": ["alpha_user_test_person", "alpha_user_test_person_2"],
     }

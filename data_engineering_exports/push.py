@@ -178,7 +178,7 @@ class PushExportDataset:
         """Create a MoveObjectFunction based on the dataset's name and target bucket."""
         return MoveObjectFunction(
             destination_bucket=self.target_bucket,
-            name=f"export-{self.name}",
+            name=f"export_{self.name}",
             source_bucket=self.export_bucket,
             tagger=self.tagger,
             prefix=self.name,
@@ -188,7 +188,7 @@ class PushExportDataset:
         """Create a CopyObjectFunction based on the dataset's name and target bucket."""
         return CopyObjectFunction(
             destination_bucket=self.target_bucket,
-            name=f"export-{self.name}",
+            name=f"export_{self.name}",
             source_bucket=self.export_bucket,
             tagger=self.tagger,
             prefix=self.name,
@@ -239,8 +239,3 @@ class WriteToExportBucketRolePolicy:
             role=username,
             name="hub-exports",
         )
-
-    @property
-    def arn(self):
-        """AWS Arn of the role policy."""
-        return self._role_policy.arn

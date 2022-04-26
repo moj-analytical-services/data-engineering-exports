@@ -40,6 +40,7 @@ def test_config_1():
 def test_config_2():
     return {
         "name": "test_dataset_2",
+        "keep_files": True,
         "target_bucket": "test-bucket_2",
         "users": ["alpha_user_test_person", "alpha_user_test_person_2"],
     }

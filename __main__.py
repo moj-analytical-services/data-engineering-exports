@@ -10,7 +10,7 @@ import data_engineering_exports.utils as utils
 
 
 # PUSH INFRASTRUCTURE
-# When files are added to the export bucket, move them to their target bucket
+# When files are added to the export bucket, move or copy them to their target bucket
 stack = get_stack()
 tagger = Tagger(environment_name=stack)
 export_bucket = Bucket(name="mojap-hub-exports", tagger=tagger)
@@ -46,7 +46,7 @@ for file in pull_config_files:
         pull.create_pull_bucket_policy
     )
     BucketPolicy(
-        resource_name=f"{name}-bucket-policy",
+        resource_name=f"{name}_bucket_policy",
         bucket=pull_bucket.id,
         policy=bucket_policy.json,
         opts=ResourceOptions(parent=pull_bucket),
