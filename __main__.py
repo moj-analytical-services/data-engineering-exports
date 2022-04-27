@@ -18,7 +18,7 @@ export("export_bucket", export_bucket._bucket.arn)
 
 # Load the datasets and build AWS resources from them
 push_config_files = utils.list_yaml_files("push_datasets")
-datasets = push.PushDatasets(push_config_files, export_bucket, tagger)
+datasets = push.PushExportDatasets(push_config_files, export_bucket, tagger)
 datasets.load_datasets_and_users()
 datasets.build_lambda_functions()
 datasets.build_role_policies()

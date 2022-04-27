@@ -10,7 +10,6 @@ from data_engineering_exports.push import (
     DatasetsNotLoadedError,
     UsersNotLoadedError,
 )
-from tests.utils_for_tests import assert_pulumi_output_equals_expected
 
 
 @pytest.fixture(scope="module")
@@ -114,30 +113,40 @@ class TestPushExportDataset:
 
 
 @pulumi.runtime.test
-def test_arn(export_bucket):
-    """"""
-    test_policy = WriteToExportBucketRolePolicy(
+def test_write_to_export_bucket_role_policy(export_bucket):
+    """Check name, user and policy statements of a WriteToExportBucketRolePolicy"""
+
+    def validate_properties(args):
+        (
+            name,
+            user,
+            policy_statements,
+        ) = args
+        assert name == "hub_exports"
+        assert user == "alpha_test_user"
+        assert policy_statements == [
+            {
+                "actions": [
+                    "s3:PutObject",
+                    "s3:PutObjectAcl",
+                    "s3:PutObjectTagging",
+                ],
+                "resources": [
+                    "arn:aws:s3:::test-export-bucket/prefix_1/*",
+                    "arn:aws:s3:::test-export-bucket/prefix_2/*",
+                ],
+            },
+            {
+                "actions": ["s3:ListBucket"],
+                "resources": ["arn:aws:s3:::test-export-bucket"],
+            },
+        ]
+
+    test_role_policy = WriteToExportBucketRolePolicy(
         "alpha_test_user", export_bucket, ["prefix_1", "prefix_2"]
     )
-    expected_name = "hub-exports"
-    return pulumi.Output.all(test_policy._role_policy.name, expected_name).apply(
-        assert_pulumi_output_equals_expected
-    )
-    # HOW TO CHECK THE POLICY ITSELF? I'VE MANAGED BEFORE
-
-
-class TestWriteToExportBucketRolePolicy:
-    @pytest.fixture(autouse=True, scope="class")
-    @pulumi.runtime.test
-    def make_test_role_policy(self, export_bucket):
-        self.__class__.test_role_policy = WriteToExportBucketRolePolicy(
-            "alpha_test_user", export_bucket, ["prefix_1", "prefix_2"]
-        )
-
-    @pulumi.runtime.test
-    def test_name(self):
-        """"""
-        expected_name = "hub-exports"
-        return pulumi.Output.all(
-            self.test_role_policy._role_policy.name, expected_name
-        ).apply(assert_pulumi_output_equals_expected)
+    return pulumi.Output.all(
+        test_role_policy._role_policy.name,
+        test_role_policy._role_policy.role,
+        test_role_policy._policy_document.statements,
+    ).apply(validate_properties)
