@@ -5,7 +5,11 @@ from data_engineering_exports.pull import (
     create_pull_bucket_policy,
     create_read_write_role_policy,
 )
-from tests.helpers_for_tests import assert_pulumi_output_equals_expected
+
+
+def assert_pulumi_output_equals_expected(args):
+    output, expected = args
+    assert output == expected
 
 
 @pulumi.runtime.test

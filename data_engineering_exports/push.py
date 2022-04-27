@@ -80,7 +80,8 @@ class PushExportDatasets:
         if self.datasets:
             self.lambdas = []  # Empty the list first if run for a second time
             for dataset in self.datasets:
-                self.lambdas.append(dataset.build_lambda_function())
+                dataset.build_lambda_function()
+                self.lambdas.append(dataset.lambda_function)
                 export(  # Have Pulumi export the arn of the role for each Lambda
                     name=f"{dataset.name}_lambda_role_arn",
                     value=dataset.lambda_function._role.arn,
