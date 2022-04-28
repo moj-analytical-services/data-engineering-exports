@@ -17,7 +17,7 @@ def list_yaml_files(folder_name: str) -> List[Path]:
     list
         List of Paths to all the yaml files in the folder.
     """
-    return list(Path(folder_name).glob("*.yaml"))
+    return sorted(list(Path(folder_name).glob("*.yaml")))
 
 
 def load_yaml(filepath: Union[Path, str]) -> Dict[Any, Any]:
