@@ -34,7 +34,7 @@ Only use lower case and underscores in your dataset name.
     - alpha_user_two
 ```
 
-4. For a pull dataset, instead of 'bucket', add the Amazon Web Services 'Arns' of the roles that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this:
+4. For a pull dataset, you must also add the Amazon Web Services 'Arns' of the roles that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this:
 
 ``` yaml
   name: new_project

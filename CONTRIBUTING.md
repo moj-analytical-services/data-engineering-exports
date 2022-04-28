@@ -2,7 +2,7 @@
 
 To get started, set up a new virtual environment and `pip install -r requirements.txt`.
 
-Then run `pre-commit install` to set up the pre-commit hooks (this is optional, but saves dithering with formatting).
+Then install the pre-commit hooks with `pre-commit install`.
 
 ## Access the Pulumi stack
 
