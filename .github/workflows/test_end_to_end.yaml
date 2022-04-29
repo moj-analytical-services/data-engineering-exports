@@ -5,8 +5,8 @@ on: pull_request
 jobs:
   localstack:
     name: End-to-end tests
-    #runs-on: [self-hosted, development-infrastructure]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, development-infrastructure]
+    #runs-on: ubuntu-latest
     services:
       localstack:
         image: localstack/localstack:latest
