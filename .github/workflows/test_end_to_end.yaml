@@ -15,9 +15,9 @@ jobs:
           DEFAULT_REGION: eu-west-1
           AWS_ACCESS_KEY_ID: testkey
           AWS_SECRET_ACCESS_KEY: testsecret
-          ports:
-            - 4566:4566
-            - 4571:4571
+        ports:
+          - 4566:4566
+          - 4571:4571
     strategy:
       fail-fast: false
       max-parallel: 4
