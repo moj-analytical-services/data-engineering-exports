@@ -64,9 +64,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TEST_PULUMI_BACKEND: ${{ secrets.TEST_PULUMI_BACKEND }}
           DEFAULT_REGION: eu-west-1
-          AWS_ACCOUNT_ID: "000000000000"
-          AWS_ACCESS_KEY_ID: testkey
-          AWS_SECRET_ACCESS_KEY: testsecret
+          #AWS_ACCOUNT_ID: "000000000000"
+          #AWS_ACCESS_KEY_ID: testkey
+          #AWS_SECRET_ACCESS_KEY: testsecret
 
         run: |
           if [ -d tests_end_to_end ]; then pytest tests_end_to_end/ -vv --disable-warnings; fi
