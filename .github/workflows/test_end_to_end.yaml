@@ -70,3 +70,4 @@ jobs:
 
         run: |
           pulumilocal login --local
+          pulumilocal init
