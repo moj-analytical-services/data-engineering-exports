@@ -55,7 +55,7 @@ jobs:
         env:
           PULUMI_CONFIG_PASSPHRASE: ""
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TEST_PULUMI_BACKEND: ${{ secrets.TEST_PULUMI_BACKEND }}
+          TEST_PULUMI_BACKEND: pulumi login --local
           DEFAULT_REGION: eu-west-1
           AWS_ACCOUNT_ID: "000000000000"
           AWS_ACCESS_KEY_ID: testkey
