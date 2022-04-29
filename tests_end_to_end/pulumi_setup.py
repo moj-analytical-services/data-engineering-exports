@@ -11,7 +11,7 @@ from pulumi import automation as auto
 test_region = "eu-west-1"
 session = boto3.Session(region_name=test_region)
 s3_client = session.client("s3")
-backend = os.environ["TEST_PULUMI_BACKEND"]
+# backend = os.environ["TEST_PULUMI_BACKEND"]
 
 
 # FROM UTILS
@@ -100,7 +100,7 @@ class InfrastructureForTests:
                 project_settings=auto.ProjectSettings(
                     name=self.stack_name,
                     runtime=auto.ProjectRuntimeInfo(name="python"),
-                    backend=auto.ProjectBackend(url=backend),
+                    # backend=auto.ProjectBackend(url=backend),
                 )
             ),
         )
