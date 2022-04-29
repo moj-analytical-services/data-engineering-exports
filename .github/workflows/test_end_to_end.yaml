@@ -54,11 +54,13 @@ jobs:
       - name: Run tests with pytest
         env:
           PULUMI_CONFIG_PASSPHRASE: ""
+          PULUMI_ACCESS_TOKEN: ""
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TEST_PULUMI_BACKEND: pulumi login --local
           DEFAULT_REGION: eu-west-1
           AWS_ACCOUNT_ID: "000000000000"
           AWS_ACCESS_KEY_ID: testkey
           AWS_SECRET_ACCESS_KEY: testsecret
+
         run: |
           if [ -d tests_end_to_end ]; then pytest tests_end_to_end/ -vv --disable-warnings; fi
