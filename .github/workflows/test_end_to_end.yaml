@@ -1,0 +1,55 @@
+
+name: "tests_end_to_end: Pulumi"
+on: pull_request
+
+jobs:
+  preview:
+    name: End-to-end tests
+    runs-on: [self-hosted, development-infrastructure]
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-skip-session-tagging: true
+          role-duration-seconds: 3600
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Get Pulumi version
+        id: get-pulumi-version
+        run: |
+          echo "::set-output name=PULUMI_VERSION::$(python .github/workflows/scripts/get_pulumi_version.py)"
+      - name: Remove existing Pulumi installations
+        run: |
+          rm -rf $HOME/.pulumi
+      - name: Install Pulumi CLI
+        uses: pulumi/setup-pulumi@v2
+        with:
+          pulumi-version: ${{ steps.get-pulumi-version.outputs.PULUMI_VERSION }}
+        continue-on-error: true
+      - if: github.event_name == 'pull_request'
+        run: echo "GIT_BRANCH=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+      - if: github.event_name != 'pull_request'
+        run: echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+      - name: Run tests with pytest
+        env:
+          PULUMI_CONFIG_PASSPHRASE: ""
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEST_PULUMI_BACKEND: ${{ secrets.TEST_PULUMI_BACKEND }}
+        run: |
+          if [ -d tests_end_to_end ]; then pytest tests_end_to_end/ -vv --disable-warnings; fi
