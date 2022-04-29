@@ -69,6 +69,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: testsecret
 
         run: |
-          pulumi login --local
+          pulumilocal login --local
           pulumilocal init
           if [ -d tests_end_to_end ]; then pytest tests_end_to_end/ -vv --disable-warnings; fi
