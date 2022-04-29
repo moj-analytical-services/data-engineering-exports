@@ -3,5 +3,5 @@ runtime: python
 description:
   Infrastructure to allow data to be pushed from the Analytical Platform to the
   HMPPS Performance Hub
-backend:
-  url: s3://data-engineering-pulumi.analytics.justice.gov.uk
+#backend:
+#  url: s3://data-engineering-pulumi.analytics.justice.gov.uk
