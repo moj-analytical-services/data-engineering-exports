@@ -69,5 +69,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: testsecret
 
         run: |
+          aws --endpoint-url http://localhost:4566
           pulumilocal login --local
           pulumilocal init
