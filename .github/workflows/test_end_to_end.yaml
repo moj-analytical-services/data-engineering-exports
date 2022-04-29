@@ -9,15 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     services:
       localstack:
-      image: localstack/localstack:latest
-      env:
-        SERVICES: iam,sts,s3,lambda
-        DEFAULT_REGION: eu-west-1
-        AWS_ACCESS_KEY_ID: testkey
-        AWS_SECRET_ACCESS_KEY: testsecret
-        ports:
-          - 4566:4566
-          - 4571:4571
+        image: localstack/localstack:latest
+        env:
+          SERVICES: iam,sts,s3,lambda
+          DEFAULT_REGION: eu-west-1
+          AWS_ACCESS_KEY_ID: testkey
+          AWS_SECRET_ACCESS_KEY: testsecret
+          ports:
+            - 4566:4566
+            - 4571:4571
     strategy:
       fail-fast: false
       max-parallel: 4
@@ -58,7 +58,7 @@ jobs:
           TEST_PULUMI_BACKEND: ${{ secrets.TEST_PULUMI_BACKEND }}
           DEFAULT_REGION: eu-west-1
           AWS_ACCOUNT_ID: "000000000000"
-          AWS_ACCESS_KEY_ID: localkey
-          AWS_SECRET_ACCESS_KEY: localsecret
+          AWS_ACCESS_KEY_ID: testkey
+          AWS_SECRET_ACCESS_KEY: testsecret
         run: |
           if [ -d tests_end_to_end ]; then pytest tests_end_to_end/ -vv --disable-warnings; fi
