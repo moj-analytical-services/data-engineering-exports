@@ -28,4 +28,4 @@ def test_infrastructure():
     ) as stack:
         test_bucket = stack.up_results.outputs["test_bucket_name"].value
 
-    assert test_bucket == "pde-1574-test-bucket"
+    assert test_bucket == "pde-1574-test"

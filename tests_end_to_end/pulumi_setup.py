@@ -90,7 +90,7 @@ class InfrastructureForTests:
         region : str
             AWS region to use - defaults to eu-west-2
         """
-        self.stack_name = test_id
+        self.stack_name = "localstack"
         self.region = region
         self.stack = auto.create_or_select_stack(
             stack_name=self.stack_name,
