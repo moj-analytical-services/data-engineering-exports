@@ -1,4 +1,3 @@
-encryptionsalt: v1:t9ZLTc0MMT0=:v1:1vDlgVKVmubDHsVq:fcm/6NvLVKHg4QsMUvS2nkac+yQFVQ==
 config:
   aws:accessKey: test
   aws:endpoints:
@@ -62,8 +61,8 @@ config:
     swf: http://localhost:4566
     transfer: http://localhost:4566
     xray: http://localhost:4566
-  aws:region: eu-west-1
-  aws:s3ForcePathStyle: "true"
+  aws:region: us-east-1
+  aws:s3ForcePathStyle: 'true'
   aws:secretKey: test
-  aws:skipCredentialsValidation: "true"
-  aws:skipRequestingAccountId: "true"
+  aws:skipCredentialsValidation: 'true'
+  aws:skipRequestingAccountId: 'true'

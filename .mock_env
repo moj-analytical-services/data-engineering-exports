@@ -1,0 +1,5 @@
+export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+export AWS_SECRET_ACCESS_KEY="test"
+export AWS_ACCESS_KEY_ID="test"
+export DEFAULT_REGION="us-east-1"
+export AWS_ACCOUNT_ID="000000000000"

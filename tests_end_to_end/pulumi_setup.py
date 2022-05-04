@@ -7,8 +7,9 @@ from typing import Callable
 import boto3
 import pkg_resources
 from pulumi import automation as auto
+import yaml
 
-test_region = "eu-west-1"
+test_region = "us-east-1"
 session = boto3.Session(region_name=test_region)
 s3_client = session.client("s3")
 # backend = os.environ["TEST_PULUMI_BACKEND"]
@@ -90,6 +91,22 @@ class InfrastructureForTests:
         region : str
             AWS region to use - defaults to eu-west-2
         """
+        manual_config = {
+            "aws:accessKey": "test",
+            "aws:endpoints": {
+                "s3": "http://localhost:4566",
+                "iam": "http://localhost:4566",
+            },
+            "aws:region": "us-east-1",
+            "aws:s3ForcePathStyle": True,
+            "aws:secretKey": "test",
+            "aws:skipCredentialsValidation": True,
+            "aws:skipRequestingAccountId": True,
+        }
+
+        with open("Pulumi.localstack.yaml", "r") as localstack_config:
+            config = yaml.safe_load(localstack_config)["config"]
+
         self.stack_name = "localstack"
         self.region = region
         self.stack = auto.create_or_select_stack(
@@ -101,7 +118,16 @@ class InfrastructureForTests:
                     name=self.stack_name,
                     runtime=auto.ProjectRuntimeInfo(name="python"),
                     # backend=auto.ProjectBackend(url=backend),
-                )
+                ),
+                env_vars={
+                    "AWS_SECRET_ACCESS_KEY": "test",
+                    "AWS_ACCESS_KEY_ID": "test",
+                    "DEFAULT_REGION": "us-east-1",
+                    "AWS_ACCOUNT_ID": "000000000000",
+                },
+                stack_settings={
+                    "localstack": auto._stack_settings.StackSettings(config=config)
+                },
             ),
         )
         self.delete_status = delete_on_exit
@@ -110,30 +136,28 @@ class InfrastructureForTests:
         self.stack.workspace.install_plugin("aws", pulumi_aws_version)
         pprint("plugins installed")
         pprint("setting up config")
-        self.stack.set_config("aws:region", auto.ConfigValue(value=region))
-        pprint("config set")
         pprint("refreshing stack...")
         self.stack.refresh(on_output=pprint)
         pprint("refresh complete")
 
     def _pulumi_up(self):
         pprint("updating stack...")
-        # Parrallelisation on the ups has been turned off
+        # Parallelisation on the ups has been turned off
         # Otherwise get conflicts on the resources
         try:
             up_results = self.stack.up(
                 parallel=1,
                 on_output=pprint,
             )
-            pprint(
+            print(
                 f"update summary: "
                 f"\n{dumps(up_results.summary.resource_changes, indent=4)}"
             )
             return up_results
         # TODO: what exceptions am I catching here? Just a catch all.
         except Exception as e:
-            pprint("There was an error updating the stack")
-            pprint(e)
+            print("There was an error updating the stack")
+            print(e)
 
     def __enter__(self):
         self.up_results = self._pulumi_up()
