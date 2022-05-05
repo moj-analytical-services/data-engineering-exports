@@ -11,9 +11,6 @@ jobs:
         image: localstack/localstack:latest
         env:
           SERVICES: iam,s3,lambda
-          # DEFAULT_REGION: eu-west-1
-          # AWS_SECRET_ACCESS_KEY: test_secret
-          # AWS_ACCESS_KEY_ID: test_secret
         ports:
           - 4566:4566
           - 4571:4571

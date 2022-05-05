@@ -45,6 +45,7 @@ class InfrastructureForTests:
 
         self.stack_name = stack_name
         self.region = region
+        # Define the stack using settings from the localstack config
         self.stack = auto.create_or_select_stack(
             stack_name=self.stack_name,
             project_name=self.stack_name,
@@ -54,6 +55,12 @@ class InfrastructureForTests:
                     name=self.stack_name,
                     runtime=auto.ProjectRuntimeInfo(name="python"),
                 ),
+                env_vars={
+                    "AWS_SECRET_ACCESS_KEY": "test_secret",
+                    "AWS_ACCESS_KEY_ID": "test_key",
+                    "DEFAULT_REGION": "eu-west-1",
+                    "AWS_ACCOUNT_ID": "000000000000",
+                },
                 stack_settings={
                     "localstack": auto._stack_settings.StackSettings(config=config)
                 },
@@ -63,7 +70,6 @@ class InfrastructureForTests:
         pulumi_aws_version = get_pulumi_aws_version()
         self.stack.workspace.install_plugin("aws", pulumi_aws_version)
         print("Plugins installed")
-        print("Setting up config")
         print("Refreshing stack")
         self.stack.refresh(on_output=print)
         print("Refresh complete")
@@ -71,6 +77,7 @@ class InfrastructureForTests:
     def _pulumi_up(self):
         print("Updating stack")
         # No parallel processing, to avoid conflicts on the resources
+        # TODO: check if parallel might work when using localstack
         try:
             up_results = self.stack.up(parallel=1, on_output=print)
             print(
@@ -89,3 +96,4 @@ class InfrastructureForTests:
 
     def __exit__(self, type, value, traceback):
         print("Tests complete - exiting Pulumi test infrastructure ")
+        # TODO: if local, destroy the stack? What abotu bucket contents?
