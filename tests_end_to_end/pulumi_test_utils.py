@@ -54,12 +54,6 @@ class InfrastructureForTests:
                     name=self.stack_name,
                     runtime=auto.ProjectRuntimeInfo(name="python"),
                 ),
-                env_vars={
-                    "AWS_SECRET_ACCESS_KEY": "test_secret",
-                    "AWS_ACCESS_KEY_ID": "test_key",
-                    "DEFAULT_REGION": "eu-west-1",
-                    "AWS_ACCOUNT_ID": "000000000000",
-                },
                 stack_settings={
                     "localstack": auto._stack_settings.StackSettings(config=config)
                 },
