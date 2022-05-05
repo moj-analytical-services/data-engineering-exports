@@ -10,7 +10,7 @@ jobs:
       localstack:
         image: localstack/localstack:latest
         env:
-          SERVICES: iam,sts,s3,lambda
+          SERVICES: iam,s3,lambda
           DEFAULT_REGION: eu-west-1
           AWS_ACCESS_KEY_ID: test_key
           AWS_SECRET_ACCESS_KEY: test_secret
@@ -53,11 +53,10 @@ jobs:
       - name: Run tests with pytest
         env:
           PULUMI_CONFIG_PASSPHRASE: ""
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_REGION: eu-west-1
-          AWS_ACCOUNT_ID: "000000000000"
-          AWS_ACCESS_KEY_ID: test_key
-          AWS_SECRET_ACCESS_KEY: test_secret
+          #DEFAULT_REGION: eu-west-1
+          #AWS_ACCOUNT_ID: "000000000000"
+          #AWS_ACCESS_KEY_ID: test_key
+          #AWS_SECRET_ACCESS_KEY: test_secret
 
         run: |
           pulumi login --local

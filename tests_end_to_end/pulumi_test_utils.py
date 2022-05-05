@@ -1,23 +1,26 @@
 from json import dumps
-from typing import Callable
+import pkg_resources
+from typing import Callable, Optional
 
 from pulumi import automation as auto
 import yaml
 
-from tests_end_to_end.utils_for_tests import get_pulumi_aws_version
 
-# session = boto3.Session(region_name=test_region)
-# s3_client = session.client("s3")
-# backend = os.environ["TEST_PULUMI_BACKEND"]
+def get_pulumi_aws_version():
+    """Check what version of the pulumi-aws package is installed."""
+    packages = {p.project_name: p.version for p in pkg_resources.working_set}
+    if "pulumi-aws" in packages:
+        return "v" + packages["pulumi-aws"]
+    else:
+        raise Exception("pulumi-aws is not installed")
 
 
 class InfrastructureForTests:
     def __init__(
         self,
         pulumi_program: Callable,
-        delete_on_exit: bool = True,
-        region: str = "eu-west-1",
-        stack_name: str = "localstack",
+        region: Optional[str] = "eu-west-1",
+        stack_name: Optional[str] = "localstack",
     ) -> None:
         """
         Test infrastructure for end-to-end pipeline testing.
@@ -30,26 +33,13 @@ class InfrastructureForTests:
         pulumi_program : Callable
             The program to be tested. Provides Pulumi resources to be created
             temporarily for testing.
-        delete_on_exit : bool
-            A debug option, allowing resources to be retained rather than destroyed
-            at the end of the test. These resources will need to be manually deleted
-            from AWS, as the TestInfrastructure won't delete them.
-        region : str
-            AWS region to use - defaults to eu-west-2
+        region : Optional[str]
+            AWS region to use - defaults to eu-west-1
+        stack_name : Optional[str]
+            Name for the test stack - should have a matching config file.
+            Defaults to localstack.
         """
-        # manual_config = {
-        #    "aws:accessKey": "test",
-        #    "aws:endpoints": {
-        #        "s3": "http://localhost:4566",
-        #        "iam": "http://localhost:4566",
-        #    },
-        #    "aws:region": "us-east-1",
-        #    "aws:s3ForcePathStyle": True,
-        #    "aws:secretKey": "test",
-        #    "aws:skipCredentialsValidation": True,
-        #    "aws:skipRequestingAccountId": True,
-        # }
-
+        # Get the Pulumi config for localstack
         with open(f"Pulumi.{stack_name}.yaml", "r") as localstack_config:
             config = yaml.safe_load(localstack_config)["config"]
 
@@ -75,7 +65,6 @@ class InfrastructureForTests:
                 },
             ),
         )
-        self.delete_status = delete_on_exit
         print("Installing plugins")
         pulumi_aws_version = get_pulumi_aws_version()
         self.stack.workspace.install_plugin("aws", pulumi_aws_version)
@@ -105,37 +94,4 @@ class InfrastructureForTests:
         return self
 
     def __exit__(self, type, value, traceback):
-        print("Exiting")
-
-
-#
-#    if self.delete_status is True:
-#
-#        bucket_name_list = extract_bucket_name(self.up_results.stdout)
-#
-#        for bucket_name in bucket_name_list:
-#            response = bucket_list_response(bucket_name)
-#            if response is not None and response["KeyCount"] > 0:
-#                pprint("Bucket was not empty. Empty bucket operation performed")
-#                empty_bucket(bucket_name, session)
-#            elif response is None:
-#                pprint(
-#                    "Bucket not in data engineering account. "
-#                    + "Empty bucket operation performed"
-#                )
-#                empty_bucket(bucket_name, session)
-#
-#        try:
-#            # Parallel deletions are turned off as was causing conflicts:
-#            # 'A conflicting conditional operation is currently in
-#            # progress against this resource.'
-#
-#            self.stack.destroy(parallel=1, on_output=pprint)
-#            self.stack.workspace.remove_stack(stack_name=self.stack_name)
-#            pprint("stack destroy complete")
-#
-#        except Exception:
-#            pprint("stack destroy failed")
-#
-#    else:
-#        pprint("stack not destroyed, remember to clean later!")
+        print("Tests complete - exiting Pulumi test infrastructure ")
