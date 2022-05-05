@@ -1,5 +1,5 @@
 config:
-  aws:accessKey: test
+  aws:accessKey: test_key
   aws:endpoints:
   - acm: http://localhost:4566
     amplify: http://localhost:4566
@@ -61,8 +61,8 @@ config:
     swf: http://localhost:4566
     transfer: http://localhost:4566
     xray: http://localhost:4566
-  aws:region: us-east-1
+  aws:region: eu-west-1
   aws:s3ForcePathStyle: 'true'
-  aws:secretKey: test
+  aws:secretKey: test_secret
   aws:skipCredentialsValidation: 'true'
   aws:skipRequestingAccountId: 'true'
