@@ -1,12 +1,4 @@
-import pkg_resources
-
-
-def get_pulumi_version():
-    packages = {p.project_name: p.version for p in pkg_resources.working_set}
-    if "pulumi" in packages:
-        return packages["pulumi"]
-    else:
-        raise Exception("pulumi is not installed")
+from tests_end_to_end.pulumi_test_utils import get_pulumi_version
 
 
 if __name__ == "__main__":

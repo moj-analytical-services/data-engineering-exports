@@ -6,13 +6,39 @@ from pulumi import automation as auto
 import yaml
 
 
-def get_pulumi_aws_version():
-    """Check what version of the pulumi-aws package is installed."""
-    packages = {p.project_name: p.version for p in pkg_resources.working_set}
-    if "pulumi-aws" in packages:
-        return "v" + packages["pulumi-aws"]
+class PackageNotFoundError(Exception):
+    pass
+
+
+def get_pulumi_version(aws: bool = False, include_v: bool = False) -> str:
+    """Check what version of the pulumi-aws package is installed.
+
+    Parameters
+    ----------
+    aws : bool
+        If True, look for the pulumi-aws package instead of pulumi.
+    include_v : bool
+        If True, return v1.2.3 rather than 1.2.3
+
+    Returns
+    -------
+    str
+        The version number of the requested pulumi package
+    """
+    if aws:
+        package_to_find = "pulumi-aws"
     else:
-        raise Exception("pulumi-aws is not installed")
+        package_to_find = "pulumi"
+
+    packages = {p.project_name: p.version for p in pkg_resources.working_set}
+    if package_to_find in packages:
+        version = packages[package_to_find]
+        if include_v:
+            return "v" + version
+        else:
+            return version
+    else:
+        raise PackageNotFoundError(f"{package_to_find} is not installed")
 
 
 class InfrastructureForTests:
@@ -67,7 +93,7 @@ class InfrastructureForTests:
             ),
         )
         print("Installing plugins")
-        pulumi_aws_version = get_pulumi_aws_version()
+        pulumi_aws_version = get_pulumi_version(aws=True, include_v=True)
         self.stack.workspace.install_plugin("aws", pulumi_aws_version)
         print("Plugins installed")
         print("Refreshing stack")
