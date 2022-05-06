@@ -29,25 +29,20 @@ Users should make requests in the form of pull requests, [as described in the re
 
 ## Running end-to-end tests
 
-These are stored in the tests_end_to_end/ directory. They should run automatically when you open a pull request. To check them locally, first set the following environment variables:
+End-to-end tests run using Localstack, which creates a mock AWS environment. The test infrastructure should behave like real resources, but none of it needs access to a real AWS account.
 
-export TEST_PULUMI_BACKEND=<url for the Pulumi sandbox backend>
-export AWS_ROLE_TO_ASSUME=<arn of the Github Actions infrastructure role>
-export PULUMI_CONFIG_PASSPHRASE=""
-export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+The tests are are stored in the `tests_end_to_end/` directory. They should run automatically when you open a pull request.
 
-See our LastPass shared folders for the backend and role values.
+To run the end-to-end tests locally:
 
-To set these values easily, create a file called .env in the directory, copy/paste the environment variables above and save.
+- install Docker
+- navigate to your project directory and activate your virtual environment
+- install localstack with `pip install localstack`
+- open Docker
+- in your terminal, run `localstack start`
+- open another terminal window, and again navigate to your project directory
+- run tests with `pytest tests_end_to_end/ --disable-warnings -vv`
 
-To run the tests, make sure you're in your virtual environment, aws-vault into the sandbox-restricted-admin account and source the .env file:
+When running locally you should restart localstack between test runs. In its terminal window, press `ctrl-c` to sto it, then run `localstack start` again.
 
-```
-aws-vault exec sandbox-restricted-admin -d 4h
-source .env
-pytest tests_end_to_end/ -W ignore::DeprecationWarning -vv
-```
-
-You will need to replace sandbox-restricted-admin with the profile name used in your local .aws/config file.
-
-pytest should destroy all resources once tests are completed, whether the tests pass or fail. However the resources will not be destroyed if the tests error out, and must be deleted manually.
+Otherwise it will still contain resources created from your last test run.

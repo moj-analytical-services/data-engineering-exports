@@ -96,4 +96,3 @@ class InfrastructureForTests:
 
     def __exit__(self, type, value, traceback):
         print("Tests complete - exiting Pulumi test infrastructure ")
-        # TODO: if local, destroy the stack? What about bucket contents?
