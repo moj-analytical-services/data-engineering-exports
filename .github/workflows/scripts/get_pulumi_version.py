@@ -1,4 +1,4 @@
-from tests_end_to_end.pulumi_test_utils import get_pulumi_version
+from data_engineering_exports.utils import get_pulumi_version
 
 
 if __name__ == "__main__":
