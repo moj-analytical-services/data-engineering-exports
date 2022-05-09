@@ -2,9 +2,17 @@ name: "tests_end_to_end: Pulumi"
 on: pull_request
 
 jobs:
-  preview:
+  localstack:
     name: End-to-end tests
-    runs-on: [self-hosted, development-infrastructure]
+    runs-on: ubuntu-latest
+    services:
+      localstack:
+        image: localstack/localstack:latest
+        env:
+          SERVICES: iam,s3,lambda
+        ports:
+          - 4566:4566
+          - 4571:4571
     strategy:
       fail-fast: false
       max-parallel: 4
@@ -13,13 +21,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-region: eu-west-1
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-skip-session-tagging: true
-          role-duration-seconds: 3600
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
@@ -48,7 +49,6 @@ jobs:
       - name: Run tests with pytest
         env:
           PULUMI_CONFIG_PASSPHRASE: ""
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TEST_PULUMI_BACKEND: ${{ secrets.ENGINEERING_PULUMI_BACKEND }}
         run: |
-          pytest tests_end_to_end/ -vv --disable-warnings
+          pulumi login --local
+          if [ -d tests_end_to_end ]; then pytest tests_end_to_end/ -vv --disable-warnings; fi

@@ -28,3 +28,23 @@ Users should make requests in the form of pull requests, [as described in the re
 6. If creating a push bucket, get the owner of that bucket to grant put permission to the role arn for the relevant project - you can find this in the stack's Pulumi outputs
 
 7. Ask the user to test the export - including making sure the Performance Hub get the test file, as we can't see the Performance Hub bucket ourselves
+
+## Running end-to-end tests
+
+End-to-end tests run using Localstack, which creates a mock AWS environment. The test infrastructure should behave like real resources, but none of it needs access to a real AWS account.
+
+The tests are are stored in the `tests_end_to_end/` directory. They should run automatically when you open a pull request.
+
+To run the end-to-end tests locally:
+
+- install Docker
+- navigate to your project directory and activate your virtual environment
+- install localstack with `pip install localstack`
+- open Docker
+- in your terminal, run `localstack start`
+- open another terminal window, and again navigate to your project directory
+- run tests with `pytest tests_end_to_end/ --disable-warnings -vv`
+
+When running locally you should restart localstack between test runs. In its terminal window, press `ctrl-c` to sto it, then run `localstack start` again.
+
+Otherwise it will still contain resources created from your last test run.

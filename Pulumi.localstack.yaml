@@ -1,6 +1,6 @@
-encryptionsalt: v1:hBF3V5tFvWs=:v1:g6DXV6QPlhwJnV9B:NiuErL67pRStRxnVRP3msXGpXbW/lQ==
+encryptionsalt: v1:K+nCy2e3xy8=:v1:IfcTiVa2dY/gbV0o:96FBAEoaBUeU331zuf9N8t5nTdm5uQ==
 config:
-  aws:accessKey: test
+  aws:accessKey: test_key
   aws:endpoints:
   - acm: http://localhost:4566
     amplify: http://localhost:4566
@@ -64,6 +64,6 @@ config:
     xray: http://localhost:4566
   aws:region: eu-west-1
   aws:s3ForcePathStyle: "true"
-  aws:secretKey: test
+  aws:secretKey: test_secret
   aws:skipCredentialsValidation: "true"
   aws:skipRequestingAccountId: "true"

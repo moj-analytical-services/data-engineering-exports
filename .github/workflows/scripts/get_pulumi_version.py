@@ -1,12 +1,24 @@
 import pkg_resources
 
 
-def get_pulumi_version():
+class PackageNotFoundError(Exception):
+    pass
+
+
+def get_pulumi_version() -> str:
+    """Check what version of the pulumi package is installed.
+
+    Returns
+    -------
+    str
+        The version number of the pulumi package.
+    """
+    package_to_find = "pulumi"
     packages = {p.project_name: p.version for p in pkg_resources.working_set}
-    if "pulumi" in packages:
-        return packages["pulumi"]
+    if package_to_find in packages:
+        return "v" + packages[package_to_find]
     else:
-        raise Exception("pulumi is not installed")
+        raise PackageNotFoundError(f"{package_to_find} is not installed")
 
 
 if __name__ == "__main__":
