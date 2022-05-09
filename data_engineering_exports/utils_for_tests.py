@@ -1,13 +1,32 @@
 from json import dumps
+import pkg_resources
 from typing import Callable, Optional
 
 from pulumi import automation as auto
 import yaml
 
-from data_engineering_exports.utils import get_pulumi_version
+
+class PackageNotFoundError(Exception):
+    pass
 
 
-class InfrastructureForTests:
+def get_pulumi_aws_version() -> str:
+    """Check what version of the pulumi-aws package is installed.
+
+    Returns
+    -------
+    str
+        The version number of pulumi-aws package, with a v in front of it.
+    """
+    package_to_find = "pulumi-aws"
+    packages = {p.project_name: p.version for p in pkg_resources.working_set}
+    if package_to_find in packages:
+        return "v" + packages[package_to_find]
+    else:
+        raise PackageNotFoundError(f"{package_to_find} is not installed")
+
+
+class PulumiTestInfrastructure:
     def __init__(
         self,
         pulumi_program: Callable,
@@ -59,7 +78,7 @@ class InfrastructureForTests:
             ),
         )
         print("Installing plugins")
-        pulumi_aws_version = get_pulumi_version(aws=True, include_v=True)
+        pulumi_aws_version = get_pulumi_aws_version()
         self.stack.workspace.install_plugin("aws", pulumi_aws_version)
         print("Plugins installed")
         print("Refreshing stack")

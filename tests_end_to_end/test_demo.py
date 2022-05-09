@@ -2,7 +2,7 @@ from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
 from pulumi import export
 
-from tests_end_to_end.pulumi_test_utils import InfrastructureForTests
+from data_engineering_exports.utils_for_tests import PulumiTestInfrastructure
 
 test_region = "eu-west-1"
 
@@ -19,7 +19,7 @@ def pulumi_program():
 
 def test_infrastructure():
     """Make assertions about the infrastructure created in pulumi_program."""
-    with InfrastructureForTests(
+    with PulumiTestInfrastructure(
         pulumi_program=pulumi_program, region=test_region
     ) as stack:
         test_bucket = stack.up_results.outputs["test_bucket_name"].value
