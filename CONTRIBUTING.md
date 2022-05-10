@@ -35,14 +35,14 @@ The tests are are stored in the `tests_end_to_end/` directory. They should run a
 
 To run the end-to-end tests locally:
 
-- install Docker
-- navigate to your project directory and activate your virtual environment
-- install localstack with `pip install localstack`
-- open Docker
-- in your terminal, run `localstack start`
-- open another terminal window, and again navigate to your project directory
-- run tests with `pytest tests_end_to_end/ --disable-warnings -vv`
+1. install and open Docker
+2. install packages from the dev requirements file: `pip install -r requirements-dev.txt`
+3. navigate to your project directory and activate your virtual environment
+4. in your terminal, run `localstack start`
+5. open another terminal window and again navigate to your project directory
+6. log into your local Pulumi backend with `pulumi login --local` (so it doesn't try to connect to our S3-stored Pulumi backends)
+7. run tests with `pytest tests_end_to_end/ --disable-warnings -vv`
 
-When running locally you should restart localstack between test runs. In its terminal window, press `ctrl-c` to sto it, then run `localstack start` again.
+When running locally you should restart Localstack between test runs. In its terminal window, press `ctrl-c` to sto it, then run `localstack start` again.
 
-Otherwise it will still contain resources created from your last test run.
+Otherwise the Localstack container will still contain resources created from your last test run.

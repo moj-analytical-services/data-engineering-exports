@@ -4,5 +4,5 @@ dataengineeringutils3>=1.1.0,<2.0.0
 pulumi==3.22.1
 pulumi-aws>=4.0.0,<5.0.0
 pulumi-local==0.3
-pytest>=7.1.0
+pytest~=7.1.0
 PyYAML>=6.0.0,<7.0.0
