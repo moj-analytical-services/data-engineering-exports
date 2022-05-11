@@ -10,15 +10,24 @@ class PackageNotFoundError(Exception):
     pass
 
 
-def get_pulumi_aws_version() -> str:
-    """Check what version of the pulumi-aws package is installed.
+def get_pulumi_version(aws: bool = False) -> str:
+    """Check what version of either pulumi or pulumi-aws is installed.
+
+    Parameters
+    ----------
+    aws : bool
+        If True, get version of pulumi-aws. If False, get version of pulumi
 
     Returns
     -------
     str
-        The version number of pulumi-aws package, with a v in front of it.
+        The version number of the specified package, with a v in front of it.
     """
-    package_to_find = "pulumi-aws"
+    if aws:
+        package_to_find = "pulumi-aws"
+    else:
+        package_to_find = "pulumi"
+
     packages = {p.project_name: p.version for p in pkg_resources.working_set}
     if package_to_find in packages:
         return "v" + packages[package_to_find]
@@ -75,7 +84,7 @@ class PulumiTestInfrastructure:
             ),
         )
         print("Installing plugins")
-        pulumi_aws_version = get_pulumi_aws_version()
+        pulumi_aws_version = get_pulumi_version(aws=True)
         self.stack.workspace.install_plugin("aws", pulumi_aws_version)
         print("Plugins installed")
         print("Refreshing stack")

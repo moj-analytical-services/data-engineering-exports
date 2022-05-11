@@ -1,29 +1,12 @@
-import os
+from pathlib import Path
 import pkg_resources
+import sys
 
-from ....data_engineering_exports.utils_for_tests import get_pulumi_aws_version
+sys.path.insert(0, str(Path(sys.path[0]).parents[2]))
 
-
-class PackageNotFoundError(Exception):
-    pass
-
-
-def get_pulumi_version() -> str:
-    """Check what version of the pulumi package is installed.
-
-    Returns
-    -------
-    str
-        The version number of the pulumi package.
-    """
-    package_to_find = "pulumi"
-    packages = {p.project_name: p.version for p in pkg_resources.working_set}
-    if package_to_find in packages:
-        return "v" + packages[package_to_find]
-    else:
-        raise PackageNotFoundError(f"{package_to_find} is not installed")
+from data_engineering_exports.utils_for_tests import get_pulumi_version
 
 
 if __name__ == "__main__":
-    pulumi_version = get_pulumi_aws_version()
+    pulumi_version = get_pulumi_version()
     print(pulumi_version)
