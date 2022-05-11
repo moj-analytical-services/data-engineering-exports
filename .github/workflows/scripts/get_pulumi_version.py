@@ -1,7 +1,7 @@
 import os
 import pkg_resources
 
-from utils_for_tests import get_pulumi_aws_version
+from ....data_engineering_exports.utils_for_tests import get_pulumi_aws_version
 
 
 class PackageNotFoundError(Exception):
