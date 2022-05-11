@@ -1,3 +1,4 @@
+import os
 import pkg_resources
 
 from data_engineering_exports.utils_for_tests import get_pulumi_aws_version
@@ -15,6 +16,7 @@ def get_pulumi_version() -> str:
     str
         The version number of the pulumi package.
     """
+    raise Exception(os.getcwd())
     package_to_find = "pulumi"
     packages = {p.project_name: p.version for p in pkg_resources.working_set}
     if package_to_find in packages:
