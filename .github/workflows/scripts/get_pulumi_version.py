@@ -1,5 +1,4 @@
 from pathlib import Path
-import pkg_resources
 import sys
 
 sys.path.insert(0, str(Path(sys.path[0]).parents[2]))
