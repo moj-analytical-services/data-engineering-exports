@@ -1,5 +1,7 @@
 import pkg_resources
 
+from data_engineering_exports.utils_for_tests import get_pulumi_aws_version
+
 
 class PackageNotFoundError(Exception):
     pass
@@ -22,5 +24,5 @@ def get_pulumi_version() -> str:
 
 
 if __name__ == "__main__":
-    pulumi_version = get_pulumi_version()
+    pulumi_version = get_pulumi_aws_version()
     print(pulumi_version)
