@@ -1,0 +1,56 @@
+
+name: "tests_end_to_end: Pulumi"
+on: pull_request
+
+jobs:
+  localstack:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+    services:
+      localstack:
+        image: localstack/localstack:latest
+        env:
+          SERVICES: iam,s3,lambda
+        ports:
+          - 4566:4566
+          - 4571:4571
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Get Pulumi version
+        id: get-pulumi-version
+        run: |
+          echo "::set-output name=PULUMI_VERSION::$(python .github/workflows/scripts/get_pulumi_version.py)"
+      - name: Remove existing Pulumi installations
+        run: |
+          rm -rf $HOME/.pulumi
+      - name: Install Pulumi CLI
+        uses: pulumi/setup-pulumi@v2
+        with:
+          pulumi-version: ${{ steps.get-pulumi-version.outputs.PULUMI_VERSION }}
+        continue-on-error: true
+      - if: github.event_name == 'pull_request'
+        run: echo "GIT_BRANCH=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+      - if: github.event_name != 'pull_request'
+        run: echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+      - name: Run tests with pytest
+        env:
+          PULUMI_CONFIG_PASSPHRASE: ""
+
+        run: |
+          pulumi login --local
+          if [ -d tests_end_to_end ]; then pytest tests_end_to_end/ -vv --disable-warnings; fi

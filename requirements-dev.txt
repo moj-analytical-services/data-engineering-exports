@@ -1,0 +1,2 @@
+localstack~=0.14.2.9
+pre-commit~=2.19.0
