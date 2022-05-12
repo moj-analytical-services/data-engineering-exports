@@ -1,6 +1,6 @@
 from json import dumps
 import pkg_resources
-from typing import Callable, Optional
+from typing import Callable
 
 from pulumi import automation as auto
 import yaml
@@ -10,15 +10,24 @@ class PackageNotFoundError(Exception):
     pass
 
 
-def get_pulumi_aws_version() -> str:
-    """Check what version of the pulumi-aws package is installed.
+def get_pulumi_version(aws: bool = False) -> str:
+    """Check what version of either pulumi or pulumi-aws is installed.
+
+    Parameters
+    ----------
+    aws : bool
+        If True, get version of pulumi-aws. If False, get version of pulumi
 
     Returns
     -------
     str
-        The version number of pulumi-aws package, with a v in front of it.
+        The version number of the specified package, with a v in front of it.
     """
-    package_to_find = "pulumi-aws"
+    if aws:
+        package_to_find = "pulumi-aws"
+    else:
+        package_to_find = "pulumi"
+
     packages = {p.project_name: p.version for p in pkg_resources.working_set}
     if package_to_find in packages:
         return "v" + packages[package_to_find]
@@ -30,23 +39,20 @@ class PulumiTestInfrastructure:
     def __init__(
         self,
         pulumi_program: Callable,
-        region: Optional[str] = "eu-west-1",
-        stack_name: Optional[str] = "localstack",
+        region: str = "eu-west-1",
+        stack_name: str = "localstack",
     ) -> None:
         """
         Test infrastructure for end-to-end pipeline testing.
 
         Parameters
         ----------
-        test_id : str
-            An ID to be used as the 'name' variable for most purposes. Usually a
-            short, hexadecimal code.
         pulumi_program : Callable
             The program to be tested. Provides Pulumi resources to be created
             temporarily for testing.
-        region : Optional[str]
+        region : str
             AWS region to use - defaults to eu-west-1
-        stack_name : Optional[str]
+        stack_name : str
             Name for the test stack - should have a matching config file.
             Defaults to localstack.
         """
@@ -69,7 +75,7 @@ class PulumiTestInfrastructure:
                 env_vars={
                     "AWS_SECRET_ACCESS_KEY": "test_secret",
                     "AWS_ACCESS_KEY_ID": "test_key",
-                    "DEFAULT_REGION": "eu-west-1",
+                    "DEFAULT_REGION": self.region,
                     "AWS_ACCOUNT_ID": "000000000000",
                 },
                 stack_settings={
@@ -78,7 +84,7 @@ class PulumiTestInfrastructure:
             ),
         )
         print("Installing plugins")
-        pulumi_aws_version = get_pulumi_aws_version()
+        pulumi_aws_version = get_pulumi_version(aws=True)
         self.stack.workspace.install_plugin("aws", pulumi_aws_version)
         print("Plugins installed")
         print("Refreshing stack")
@@ -106,4 +112,4 @@ class PulumiTestInfrastructure:
         return self
 
     def __exit__(self, type, value, traceback):
-        print("Tests complete - exiting Pulumi test infrastructure ")
+        print("Tests complete - exiting Pulumi test infrastructure")
