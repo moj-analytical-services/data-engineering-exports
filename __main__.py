@@ -2,7 +2,7 @@ from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
 from pulumi import ResourceOptions, get_stack, export, Output
 from pulumi_aws.iam import RolePolicy
-from pulumi_aws.s3 import BucketPolicy
+from pulumi_aws.s3 import BucketPolicy, BucketNotification
 
 import data_engineering_exports.pull as pull
 import data_engineering_exports.push as push
@@ -46,7 +46,7 @@ for file in pull_config_files:
         pull.create_pull_bucket_policy
     )
     BucketPolicy(
-        resource_name=f"{name}_bucket_policy",
+        resource_name=f"{name}-bucket-policy",
         bucket=pull_bucket.id,
         policy=bucket_policy.json,
         opts=ResourceOptions(parent=pull_bucket),
@@ -63,3 +63,19 @@ for file in pull_config_files:
             role=user,
             name=f"hub-exports-pull-{name}",
         )
+
+
+# TEMPORARY FIX
+# Something is wrong with the bucket notifications in data-engineering-pulumi-components
+# I think because you can only have one BucketNotification per bucket
+# Overriding them with this combined one seems to work.
+# BUT this will break if we add new push target buckets (we don't plan to)
+bucket_notification = BucketNotification(
+    resource_name="temp-export-bucket-notification",
+    bucket=export_bucket.id,
+    lambda_functions=[push.make_notification_lambda_args(d) for d in datasets.datasets],
+    opts=ResourceOptions(
+        depends_on=[lambda_function._function for lambda_function in datasets.lambdas]
+        + [export_bucket]
+    ),
+)

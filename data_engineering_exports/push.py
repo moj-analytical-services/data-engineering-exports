@@ -13,6 +13,7 @@ from data_engineering_pulumi_components.aws.lambdas.copy_object_function import 
 from pulumi import Output, export
 from pulumi_aws.iam import GetPolicyDocumentStatementArgs, RolePolicy
 from pulumi_aws.iam.get_policy_document import get_policy_document
+from pulumi_aws.s3 import BucketNotificationLambdaFunctionArgs
 
 from data_engineering_exports.utils import load_yaml
 
@@ -241,3 +242,29 @@ class WriteToExportBucketRolePolicy:
             role=username,
             name="hub_exports",
         )
+
+
+def make_notification_lambda_args(
+    dataset: PushExportDataset,
+) -> BucketNotificationLambdaFunctionArgs:
+    """Turn dataset name and Lambda arn into a BucketNotificationLambdaFunctionArgs.
+
+    Needed because MoveObjectLambda and similar try to create a BucketNotification for
+    each Lambda (and therefore each prefix). But Pulumi only allows one
+    BucketNotification per bucket. So instead we create a single BucketNotification
+    containing a list of BucketNotificationLambdaFunctionArgs.
+
+    Parameters
+    ----------
+    dataset : push.PushExportDataset
+        A push dataset - must have already run the build_lambda_functions method.
+
+    Returns
+    -------
+    BucketNotificationLambdaFunctionArgs
+    """
+    return BucketNotificationLambdaFunctionArgs(
+        lambda_function_arn=dataset.lambda_function._function.arn,
+        events=["s3:ObjectCreated:*"],
+        filter_prefix=f"{dataset.name}/",
+    )
