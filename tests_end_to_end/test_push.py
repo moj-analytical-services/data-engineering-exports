@@ -33,7 +33,8 @@ def pulumi_program():
         name="target-bucket-2",
         tagger=tagger,
     )
-    # In AWS terms, what we call an Analytical Platform 'user' is a role.
+    # In AWS terms, what we call an Analytical Platform 'user' is a role
+    # Both roles let the Localstack user assume them, and grant no other permissions
     user_1 = Role(
         resource_name="alpha_user_test_1",
         name="alpha_user_test_1",
@@ -58,7 +59,15 @@ def pulumi_program():
         assume_role_policy=json.dumps(
             {
                 "Version": "2012-10-17",
-                "Statement": [],
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "AWS": "arn:aws:sts::000000000000:user/localstack"
+                        },
+                        "Action": "sts:AssumeRole",
+                    }
+                ],
             }
         ),
     )
@@ -91,11 +100,14 @@ def test_infrastructure():
         os.environ["AWS_ACCESS_KEY_ID"] = "test_key"
         os.environ["AWS_SECRET_ACCESS_KEY"] = "test_secret"
         user_role_1 = stack.up_results.outputs["user_role_1"].value
-        # user_role_2 = stack.up_results.outputs["user_role_2"].value
+        user_role_2 = stack.up_results.outputs["user_role_2"].value
 
         session = boto3.Session()
         s3_client = session.client("s3", endpoint_url="http://localhost:4566")
         sts_client = boto3.client("sts", endpoint_url="http://localhost:4566")
+
+        # Use the sts client to assume the user roles
+        # User 1
         assumed_user_1 = sts_client.assume_role(
             RoleArn=user_role_1,
             RoleSessionName="user_1_session",
@@ -108,16 +120,38 @@ def test_infrastructure():
             aws_secret_access_key=user_1_creds["SecretAccessKey"],
             aws_session_token=user_1_creds["SessionToken"],
         )
-        user_1_s3_client = user_1_session.client("s3")
-        print(user_1_s3_client.list_objects_v2(Bucket="test-export-bucket"))
+        user_1_s3_client = user_1_session.client(
+            "s3", endpoint_url="http://localhost:4566"
+        )
 
-        # Check both target buckets are empty
+        # User 2
+        assumed_user_2 = sts_client.assume_role(
+            RoleArn=user_role_2,
+            RoleSessionName="user_2_session",
+        )
+        user_2_creds = assumed_user_2["Credentials"]
+
+        user_2_session = boto3.Session(
+            region_name="eu-west-1",
+            aws_access_key_id=user_2_creds["AccessKeyId"],
+            aws_secret_access_key=user_2_creds["SecretAccessKey"],
+            aws_session_token=user_2_creds["SessionToken"],
+        )
+        user_2_s3_client = user_2_session.client(
+            "s3", endpoint_url="http://localhost:4566"
+        )
+
+        # Check both target buckets and export bucket are empty
+        export_bucket_contents = s3_client.list_objects_v2(
+            Bucket="test-export-bucket",
+        )
         bucket_1_contents = s3_client.list_objects_v2(
             Bucket="target-bucket-1",
         )
         bucket_2_contents = s3_client.list_objects_v2(
             Bucket="target-bucket-2",
         )
+        assert "Contents" not in export_bucket_contents
         assert "Contents" not in bucket_1_contents
         assert "Contents" not in bucket_2_contents
 
@@ -126,9 +160,13 @@ def test_infrastructure():
             Bucket="test-export-bucket",
             Body="test text",
             Key="push_test_1/file_1.txt",
-            # ServerSideEncryption="AES256",
-            # ACL="bucket-owner-full-control",
         )
+        # Check a file reaches the target bucket
+        bucket_1_contents = s3_client.list_objects_v2(
+            Bucket="target-bucket-1",
+        )
+        print(bucket_1_contents)
+        assert bucket_1_contents["Contents"]
 
         # Check user 1 and user 2 can both export to target bucket 2
 
