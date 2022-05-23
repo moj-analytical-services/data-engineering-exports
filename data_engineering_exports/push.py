@@ -184,6 +184,7 @@ class PushExportDataset:
             source_bucket=self.export_bucket,
             tagger=self.tagger,
             prefix=self.name,
+            create_notification=False,
         )
 
     def _build_copy_object_function(self):
@@ -194,6 +195,7 @@ class PushExportDataset:
             source_bucket=self.export_bucket,
             tagger=self.tagger,
             prefix=self.name,
+            create_notification=False,
         )
 
 

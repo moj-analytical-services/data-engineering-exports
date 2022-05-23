@@ -23,6 +23,17 @@ datasets.load_datasets_and_users()
 datasets.build_lambda_functions()
 datasets.build_role_policies()
 
+# Create combined bucket notification
+# You can only have one BucketNotification per bucket, so create a single combined one
+bucket_notification = BucketNotification(
+    resource_name="export-bucket-notification",
+    bucket=export_bucket.id,
+    lambda_functions=[push.make_notification_lambda_args(d) for d in datasets.datasets],
+    opts=ResourceOptions(
+        depends_on=[lambda_function._function for lambda_function in datasets.lambdas]
+        + [export_bucket]
+    ),
+)
 
 # PULL INFRASTRUCTURE
 # Let an external role get files from a bucket
@@ -63,19 +74,3 @@ for file in pull_config_files:
             role=user,
             name=f"hub-exports-pull-{name}",
         )
-
-
-# TEMPORARY FIX
-# Something is wrong with the bucket notifications in data-engineering-pulumi-components
-# I think because you can only have one BucketNotification per bucket
-# Overriding them with this combined one seems to work.
-# BUT this will break if we add new push target buckets (we don't plan to)
-bucket_notification = BucketNotification(
-    resource_name="temp-export-bucket-notification",
-    bucket=export_bucket.id,
-    lambda_functions=[push.make_notification_lambda_args(d) for d in datasets.datasets],
-    opts=ResourceOptions(
-        depends_on=[lambda_function._function for lambda_function in datasets.lambdas]
-        + [export_bucket]
-    ),
-)
