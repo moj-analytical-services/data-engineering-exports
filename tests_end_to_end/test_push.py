@@ -6,6 +6,7 @@ from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
 from pulumi import export
 from pulumi_aws.iam import Role
+from pulumi_aws.s3 import BucketPolicy
 
 from data_engineering_exports.utils_for_tests import PulumiTestInfrastructure
 from data_engineering_exports.utils import list_yaml_files
@@ -81,6 +82,9 @@ def pulumi_program():
     push.make_combined_bucket_notification(
         "test-bucket-notification", test_export_bucket, datasets
     )
+
+    # Let the target buckets accept put commands from the Lambdas
+    # In production the Cloud Platform/Performance Hub team have to do this
 
     # Export the role arns for the users
     export("user_role_1", user_1.arn)
