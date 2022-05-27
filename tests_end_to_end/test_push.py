@@ -4,8 +4,13 @@ import os
 import boto3
 from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
-from pulumi import export
-from pulumi_aws.iam import Role
+from pulumi import ResourceOptions, export
+from pulumi_aws.iam import (
+    Role,
+    get_policy_document,
+    GetPolicyDocumentStatementArgs,
+    GetPolicyDocumentStatementPrincipalArgs,
+)
 from pulumi_aws.s3 import BucketPolicy
 
 from data_engineering_exports.utils_for_tests import PulumiTestInfrastructure
@@ -26,11 +31,11 @@ def pulumi_program():
         name="test-export-bucket",
         tagger=tagger,
     )
-    Bucket(
+    target_bucket_1 = Bucket(
         name="target-bucket-1",
         tagger=tagger,
     )
-    Bucket(
+    target_bucket_2 = Bucket(
         name="target-bucket-2",
         tagger=tagger,
     )
@@ -85,7 +90,47 @@ def pulumi_program():
 
     # Let the target buckets accept put commands from the Lambdas
     # In production the Cloud Platform/Performance Hub team have to do this
-
+    # TEMPORARY HARDCODING
+    bucket_policy = BucketPolicy(
+        resource_name=f"target-bucket-1-policy",
+        bucket=target_bucket_1.id,
+        policy=get_policy_document(
+            statements=[
+                GetPolicyDocumentStatementArgs(
+                    actions=[
+                        "s3:PutObject*",
+                        "s3:PutObjectAcl",
+                        "s3:PutObjectTagging",
+                    ],
+                    principals=[
+                        GetPolicyDocumentStatementPrincipalArgs(
+                            identifiers=[
+                                "arn:aws:iam::000000000000:role/service-role/export_push_test_1-move"
+                            ],
+                            type="AWS",
+                        )
+                    ],
+                    resources=["arn:aws:s3:::target-bucket-1/*"],
+                ),
+                GetPolicyDocumentStatementArgs(
+                    actions=["s3:ListBucket"],
+                    principals=[
+                        GetPolicyDocumentStatementPrincipalArgs(
+                            identifiers=[
+                                "arn:aws:iam::000000000000:role/service-role/export_push_test_1-move"
+                            ],
+                            type="AWS",
+                        )
+                    ],
+                    resources=["arn:aws:s3:::target-bucket-1"],
+                ),
+            ]
+        ).json,
+        opts=ResourceOptions(
+            parent=target_bucket_1,
+            depends_on=[datasets.lambdas[0]._role, datasets.lambdas[1]._role],
+        ),
+    )
     # Export the role arns for the users
     export("user_role_1", user_1.arn)
     export("user_role_2", user_2.arn)
@@ -103,12 +148,13 @@ def test_infrastructure():
         # Create boto3 client and assumed role objects
         os.environ["AWS_ACCESS_KEY_ID"] = "test_key"
         os.environ["AWS_SECRET_ACCESS_KEY"] = "test_secret"
+        os.environ["AWS_DEFAULT_REGION"] = test_region
         user_role_1 = stack.up_results.outputs["user_role_1"].value
         user_role_2 = stack.up_results.outputs["user_role_2"].value
 
         session = boto3.Session()
         s3_client = session.client("s3", endpoint_url="http://localhost:4566")
-        sts_client = boto3.client("sts", endpoint_url="http://localhost:4566")
+        sts_client = session.client("sts", endpoint_url="http://localhost:4566")
 
         # Use the sts client to assume the user roles
         # User 1
@@ -165,11 +211,21 @@ def test_infrastructure():
             Body="test text",
             Key="push_test_1/file_1.txt",
         )
+
         # Check a file reaches the target bucket
         bucket_1_contents = s3_client.list_objects_v2(
             Bucket="target-bucket-1",
         )
-        print(bucket_1_contents)
+
+        print("SOURCE BUCKET CONTENTS")
+        print(
+            s3_client.list_objects_v2(
+                Bucket="test-export-bucket",
+            ).get("Contents")
+        )
+        print()
+        print("TARGET BUCKET CONTENTS")
+        print(bucket_1_contents.get("Contents"))
         assert bucket_1_contents["Contents"]
 
         # Check user 1 and user 2 can both export to target bucket 2
