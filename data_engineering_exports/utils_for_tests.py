@@ -112,4 +112,6 @@ class PulumiTestInfrastructure:
         return self
 
     def __exit__(self, type, value, traceback):
+        # Destroy the stack's resources
+        self.stack.destroy()
         print("Tests complete - exiting Pulumi test infrastructure")

@@ -1,5 +1,6 @@
 import json
 import os
+from time import sleep
 
 import boto3
 from data_engineering_pulumi_components.aws import Bucket
@@ -205,7 +206,7 @@ def test_infrastructure():
         assert "Contents" not in bucket_1_contents
         assert "Contents" not in bucket_2_contents
 
-        # Check user 1 can export to target bucket 1
+        # Check user 1 can upload to export bucket
         user_1_s3_client.put_object(
             Bucket="test-export-bucket",
             Body="test text",
@@ -213,6 +214,7 @@ def test_infrastructure():
         )
 
         # Check a file reaches the target bucket
+        sleep(5)
         bucket_1_contents = s3_client.list_objects_v2(
             Bucket="target-bucket-1",
         )
