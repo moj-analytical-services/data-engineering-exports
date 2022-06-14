@@ -81,7 +81,6 @@ def test_infrastructure():
         os.environ["AWS_ACCESS_KEY_ID"] = "test_key"
         os.environ["AWS_SECRET_ACCESS_KEY"] = "test_secret"
         os.environ["AWS_DEFAULT_REGION"] = test_region
-        os.environ["PULUMI_ACCESS_TOKEN"] = "test"
         user_role_1 = stack.up_results.outputs["user_role_1"].value
         user_role_2 = stack.up_results.outputs["user_role_2"].value
 

@@ -51,4 +51,4 @@ jobs:
           PULUMI_CONFIG_PASSPHRASE: ""
         run: |
           pulumi login --local
-          if [ -d tests_end_to_end ]; then pytest tests_end_to_end/ -vv --disable-warnings; fi
+          pytest tests -k end_to_end -vv --disable-warnings; fi
