@@ -1,4 +1,3 @@
-import json
 import os
 from time import sleep
 
@@ -7,14 +6,17 @@ from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
 from pulumi import ResourceOptions, export
 from pulumi_aws.iam import (
-    Role,
     get_policy_document,
     GetPolicyDocumentStatementArgs,
     GetPolicyDocumentStatementPrincipalArgs,
 )
 from pulumi_aws.s3 import BucketPolicy
 
-from data_engineering_exports.utils_for_tests import PulumiTestInfrastructure
+from data_engineering_exports.utils_for_tests import (
+    PulumiTestInfrastructure,
+    mock_alpha_user,
+    check_bucket_contents,
+)
 from data_engineering_exports.utils import list_yaml_files
 from data_engineering_exports import push
 
@@ -42,43 +44,10 @@ def pulumi_program():
     )
     # In AWS terms, what we call an Analytical Platform 'user' is a role
     # Both roles let the Localstack user assume them, and grant no other permissions
-    user_1 = Role(
-        resource_name="alpha_user_test_1",
-        name="alpha_user_test_1",
-        assume_role_policy=json.dumps(
-            {
-                "Version": "2012-10-17",
-                "Statement": [
-                    {
-                        "Effect": "Allow",
-                        "Principal": {
-                            "AWS": "arn:aws:sts::000000000000:user/localstack"
-                        },
-                        "Action": "sts:AssumeRole",
-                    }
-                ],
-            }
-        ),
-    )
-    user_2 = Role(
-        resource_name="alpha_user_test_2",
-        name="alpha_user_test_2",
-        assume_role_policy=json.dumps(
-            {
-                "Version": "2012-10-17",
-                "Statement": [
-                    {
-                        "Effect": "Allow",
-                        "Principal": {
-                            "AWS": "arn:aws:sts::000000000000:user/localstack"
-                        },
-                        "Action": "sts:AssumeRole",
-                    }
-                ],
-            }
-        ),
-    )
-    push_config_files = list_yaml_files("tests_end_to_end/data")
+    user_1 = mock_alpha_user("alpha_user_test_1")
+    user_2 = mock_alpha_user("alpha_user_test_2")
+
+    push_config_files = list_yaml_files("tests/data/end_to_end")
     datasets = push.PushExportDatasets(push_config_files, test_export_bucket, tagger)
     datasets.load_datasets_and_users()
     datasets.build_lambda_functions()
@@ -91,9 +60,8 @@ def pulumi_program():
 
     # Let the target buckets accept put commands from the Lambdas
     # In production the Cloud Platform/Performance Hub team have to do this
-    # TEMPORARY HARDCODING
     bucket_policy = BucketPolicy(
-        resource_name=f"target-bucket-1-policy",
+        resource_name="target-bucket-1-policy",
         bucket=target_bucket_1.id,
         policy=get_policy_document(
             statements=[
@@ -106,7 +74,8 @@ def pulumi_program():
                     principals=[
                         GetPolicyDocumentStatementPrincipalArgs(
                             identifiers=[
-                                "arn:aws:iam::000000000000:role/service-role/export_push_test_1-move"
+                                lambda_func._role.arn
+                                for lambda_func in datasets.lambdas
                             ],
                             type="AWS",
                         )
@@ -118,7 +87,8 @@ def pulumi_program():
                     principals=[
                         GetPolicyDocumentStatementPrincipalArgs(
                             identifiers=[
-                                "arn:aws:iam::000000000000:role/service-role/export_push_test_1-move"
+                                lambda_func._role.arn
+                                for lambda_func in datasets.lambdas
                             ],
                             type="AWS",
                         )
@@ -129,12 +99,14 @@ def pulumi_program():
         ).json,
         opts=ResourceOptions(
             parent=target_bucket_1,
-            depends_on=[datasets.lambdas[0]._role, datasets.lambdas[1]._role],
+            depends_on=[role._role for role in datasets.lambdas],
         ),
     )
-    # Export the role arns for the users
+    # Export the role arns for the users and Lambda functions
     export("user_role_1", user_1.arn)
     export("user_role_2", user_2.arn)
+    export("lambda_role_0", datasets.lambdas[0]._role.arn)
+    export("lambda_role_1", datasets.lambdas[1]._role.arn)
 
 
 def test_infrastructure():
@@ -206,34 +178,46 @@ def test_infrastructure():
         assert "Contents" not in bucket_1_contents
         assert "Contents" not in bucket_2_contents
 
-        # Check user 1 can upload to export bucket
+        # Check user 1 can upload to push_test_1 but user 2 can't
         user_1_s3_client.put_object(
             Bucket="test-export-bucket",
             Body="test text",
-            Key="push_test_1/file_1.txt",
+            Key="push_test_1/pass.txt",
+        )
+        user_2_s3_client.put_object(
+            Bucket="test-export-bucket",
+            Body="test text",
+            Key="push_test_1/fail.txt",
         )
 
-        # Check a file reaches the target bucket
+        # Check only pass.txt reaches the target bucket
         sleep(5)
-        bucket_1_contents = s3_client.list_objects_v2(
-            Bucket="target-bucket-1",
+        check_bucket_contents("target-bucket-1", ["push_test_1/pass.txt"], s3_client)
+
+        # Check the export bucket is empty
+        check_bucket_contents("test-export-bucket", None, s3_client)
+
+        # Check they can both export to target bucket 2
+        user_1_s3_client.put_object(
+            Bucket="test-export-bucket",
+            Body="test text",
+            Key="push_test_2/pass_1.txt",
+        )
+        user_2_s3_client.put_object(
+            Bucket="test-export-bucket",
+            Body="test text",
+            Key="push_test_2/pass_2.txt",
+        )
+        # Check both files reach the target bucket
+        sleep(5)
+        check_bucket_contents(
+            "target-bucket-2",
+            [
+                "push_test_2/pass_1.txt",
+                "push_test_2/pass_2.txt",
+            ],
+            s3_client,
         )
 
-        print("SOURCE BUCKET CONTENTS")
-        print(
-            s3_client.list_objects_v2(
-                Bucket="test-export-bucket",
-            ).get("Contents")
-        )
-        print()
-        print("TARGET BUCKET CONTENTS")
-        print(bucket_1_contents.get("Contents"))
-        assert bucket_1_contents["Contents"]
-
-        # Check user 1 and user 2 can both export to target bucket 2
-
-        # Check user 2 can't put files in export bucket's prefix for dataset 1
-        # Check user 1 can't put files in export bucket root
-
-        # Check files have been deleted from the export bucket
-        assert 0
+        # Finally, check the export bucket is once again empty
+        check_bucket_contents("test-export-bucket", None, s3_client)
