@@ -1,3 +1,3 @@
 import pytest
 
-pytest.register_assert_rewrite("utils_for_tests")
+pytest.register_assert_rewrite("data_engineering_exports.utils_for_tests")

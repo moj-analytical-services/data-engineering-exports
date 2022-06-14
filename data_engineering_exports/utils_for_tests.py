@@ -94,10 +94,8 @@ class PulumiTestInfrastructure:
 
     def _pulumi_up(self):
         print("Updating stack")
-        # No parallel processing, to avoid conflicts on the resources
-        # TODO: check if parallel might work when using localstack
         try:
-            up_results = self.stack.up(parallel=1, on_output=print)
+            up_results = self.stack.up(parallel=4, on_output=print)
             print(
                 f"Update summary: "
                 f"\n{json.dumps(up_results.summary.resource_changes, indent=4)}"

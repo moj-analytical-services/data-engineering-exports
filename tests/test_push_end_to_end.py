@@ -4,13 +4,7 @@ from time import sleep
 import boto3
 from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
-from pulumi import ResourceOptions, export
-from pulumi_aws.iam import (
-    get_policy_document,
-    GetPolicyDocumentStatementArgs,
-    GetPolicyDocumentStatementPrincipalArgs,
-)
-from pulumi_aws.s3 import BucketPolicy
+from pulumi import export
 
 from data_engineering_exports.utils_for_tests import (
     PulumiTestInfrastructure,
@@ -21,6 +15,7 @@ from data_engineering_exports.utils import list_yaml_files
 from data_engineering_exports import push
 
 test_region = "eu-west-1"
+export_bucket_name = "test-export-bucket"
 
 
 def pulumi_program():
@@ -28,17 +23,20 @@ def pulumi_program():
     - an export bucket
     - 2 target buckets
     - 2 user roles
+    - the PushExportDatasets and their:
+    -- lambda functions
+    -- role policies
     """
     tagger = Tagger(environment_name="test")
     test_export_bucket = Bucket(
-        name="test-export-bucket",
+        name=export_bucket_name,
         tagger=tagger,
     )
-    target_bucket_1 = Bucket(
+    Bucket(
         name="target-bucket-1",
         tagger=tagger,
     )
-    target_bucket_2 = Bucket(
+    Bucket(
         name="target-bucket-2",
         tagger=tagger,
     )
@@ -58,50 +56,6 @@ def pulumi_program():
         "test-bucket-notification", test_export_bucket, datasets
     )
 
-    # Let the target buckets accept put commands from the Lambdas
-    # In production the Cloud Platform/Performance Hub team have to do this
-    bucket_policy = BucketPolicy(
-        resource_name="target-bucket-1-policy",
-        bucket=target_bucket_1.id,
-        policy=get_policy_document(
-            statements=[
-                GetPolicyDocumentStatementArgs(
-                    actions=[
-                        "s3:PutObject*",
-                        "s3:PutObjectAcl",
-                        "s3:PutObjectTagging",
-                    ],
-                    principals=[
-                        GetPolicyDocumentStatementPrincipalArgs(
-                            identifiers=[
-                                lambda_func._role.arn
-                                for lambda_func in datasets.lambdas
-                            ],
-                            type="AWS",
-                        )
-                    ],
-                    resources=["arn:aws:s3:::target-bucket-1/*"],
-                ),
-                GetPolicyDocumentStatementArgs(
-                    actions=["s3:ListBucket"],
-                    principals=[
-                        GetPolicyDocumentStatementPrincipalArgs(
-                            identifiers=[
-                                lambda_func._role.arn
-                                for lambda_func in datasets.lambdas
-                            ],
-                            type="AWS",
-                        )
-                    ],
-                    resources=["arn:aws:s3:::target-bucket-1"],
-                ),
-            ]
-        ).json,
-        opts=ResourceOptions(
-            parent=target_bucket_1,
-            depends_on=[role._role for role in datasets.lambdas],
-        ),
-    )
     # Export the role arns for the users and Lambda functions
     export("user_role_1", user_1.arn)
     export("user_role_2", user_2.arn)
@@ -111,9 +65,14 @@ def pulumi_program():
 
 def test_infrastructure():
     """
-    Use test
-    Create PushExportDatasets
+    Use PulumiTestInfrastructure to run tests on the pulumi_program.
 
+    Checks that when users upload files, these are correctly moved to the correct
+    keys in the correct target buckets.
+
+    DOESN'T check the enforcement of S3 policies, because of a Localstack restriction.
+    This means I haven't tested that user 2 can't write to user 1's folder.
+    See https://github.com/localstack/localstack/issues/2238
     """
     with PulumiTestInfrastructure(
         pulumi_program=pulumi_program, region=test_region
@@ -165,51 +124,37 @@ def test_infrastructure():
         )
 
         # Check both target buckets and export bucket are empty
-        export_bucket_contents = s3_client.list_objects_v2(
-            Bucket="test-export-bucket",
-        )
-        bucket_1_contents = s3_client.list_objects_v2(
-            Bucket="target-bucket-1",
-        )
-        bucket_2_contents = s3_client.list_objects_v2(
-            Bucket="target-bucket-2",
-        )
-        assert "Contents" not in export_bucket_contents
-        assert "Contents" not in bucket_1_contents
-        assert "Contents" not in bucket_2_contents
+        check_bucket_contents(export_bucket_name, None, s3_client)
+        check_bucket_contents("target-bucket-1", None, s3_client)
+        check_bucket_contents("target-bucket-2", None, s3_client)
 
-        # Check user 1 can upload to push_test_1 but user 2 can't
+        # Check user 1 can upload to push_test_1
+        # No way for Localstack to check that user 2 can't upload to this folder
         user_1_s3_client.put_object(
-            Bucket="test-export-bucket",
+            Bucket=export_bucket_name,
             Body="test text",
             Key="push_test_1/pass.txt",
         )
-        user_2_s3_client.put_object(
-            Bucket="test-export-bucket",
-            Body="test text",
-            Key="push_test_1/fail.txt",
-        )
-
         # Check only pass.txt reaches the target bucket
-        sleep(5)
+        sleep(4)
         check_bucket_contents("target-bucket-1", ["push_test_1/pass.txt"], s3_client)
 
         # Check the export bucket is empty
-        check_bucket_contents("test-export-bucket", None, s3_client)
+        check_bucket_contents(export_bucket_name, None, s3_client)
 
         # Check they can both export to target bucket 2
         user_1_s3_client.put_object(
-            Bucket="test-export-bucket",
+            Bucket=export_bucket_name,
             Body="test text",
             Key="push_test_2/pass_1.txt",
         )
         user_2_s3_client.put_object(
-            Bucket="test-export-bucket",
+            Bucket=export_bucket_name,
             Body="test text",
             Key="push_test_2/pass_2.txt",
         )
         # Check both files reach the target bucket
-        sleep(5)
+        sleep(4)
         check_bucket_contents(
             "target-bucket-2",
             [
@@ -220,4 +165,4 @@ def test_infrastructure():
         )
 
         # Finally, check the export bucket is once again empty
-        check_bucket_contents("test-export-bucket", None, s3_client)
+        check_bucket_contents(export_bucket_name, None, s3_client)
