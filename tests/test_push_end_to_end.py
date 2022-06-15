@@ -42,10 +42,29 @@ def pulumi_program():
     )
     # In AWS terms, what we call an Analytical Platform 'user' is a role
     # Both roles let the Localstack user assume them, and grant no other permissions
-    user_1 = mock_alpha_user("alpha_user_test_1")
+    # user_1 = mock_alpha_user("alpha_user_test_1")
+    from pulumi_aws.iam import Role
+    import json
+
+    user_1 = Role(
+        resource_name="alpha_user_test_1",
+        name="alpha_user_test_1",
+        assume_role_policy=json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "AWS": f"arn:aws:sts::000000000000:user/localstack"
+                        },
+                        "Action": "sts:AssumeRole",
+                    }
+                ],
+            }
+        ),
+    )
     user_2 = mock_alpha_user("alpha_user_test_2")
-    print(type(user_1))
-    print(user_1.arn)
 
     push_config_files = list_yaml_files("tests/data/end_to_end")
     datasets = push.PushExportDatasets(push_config_files, test_export_bucket, tagger)
@@ -84,7 +103,6 @@ def test_infrastructure():
         os.environ["AWS_SECRET_ACCESS_KEY"] = "test_secret"
         os.environ["AWS_DEFAULT_REGION"] = test_region
         user_role_1 = stack.up_results.outputs["user_role_1"].value
-        print(user_role_1)
         user_role_2 = stack.up_results.outputs["user_role_2"].value
 
         session = boto3.Session()
