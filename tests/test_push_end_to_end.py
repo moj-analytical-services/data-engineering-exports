@@ -44,6 +44,8 @@ def pulumi_program():
     # Both roles let the Localstack user assume them, and grant no other permissions
     user_1 = mock_alpha_user("alpha_user_test_1")
     user_2 = mock_alpha_user("alpha_user_test_2")
+    print(type(user_1))
+    print(user_1.arn)
 
     push_config_files = list_yaml_files("tests/data/end_to_end")
     datasets = push.PushExportDatasets(push_config_files, test_export_bucket, tagger)
@@ -82,6 +84,7 @@ def test_infrastructure():
         os.environ["AWS_SECRET_ACCESS_KEY"] = "test_secret"
         os.environ["AWS_DEFAULT_REGION"] = test_region
         user_role_1 = stack.up_results.outputs["user_role_1"].value
+        print(user_role_1)
         user_role_2 = stack.up_results.outputs["user_role_2"].value
 
         session = boto3.Session()
