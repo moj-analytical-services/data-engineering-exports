@@ -9,7 +9,7 @@ jobs:
       localstack:
         image: localstack/localstack:latest
         env:
-          SERVICES: iam,s3,lambda
+          SERVICES: iam,s3,lambda,sts
         ports:
           - 4566:4566
           - 4571:4571
