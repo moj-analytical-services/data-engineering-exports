@@ -25,14 +25,8 @@ datasets.build_role_policies()
 
 # Create combined bucket notification
 # You can only have one BucketNotification per bucket, so create a single combined one
-bucket_notification = BucketNotification(
-    resource_name="export-bucket-notification",
-    bucket=export_bucket.id,
-    lambda_functions=[push.make_notification_lambda_args(d) for d in datasets.datasets],
-    opts=ResourceOptions(
-        depends_on=[lambda_function._function for lambda_function in datasets.lambdas]
-        + [export_bucket]
-    ),
+bucket_notification = push.make_combined_bucket_notification(
+    name="export-bucket-notification", export_bucket=export_bucket, datasets=datasets
 )
 
 # PULL INFRASTRUCTURE

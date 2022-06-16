@@ -10,10 +10,10 @@ from data_engineering_pulumi_components.aws.lambdas.move_object_function import 
 from data_engineering_pulumi_components.aws.lambdas.copy_object_function import (
     CopyObjectFunction,
 )
-from pulumi import Output, export
+from pulumi import Output, export, ResourceOptions
 from pulumi_aws.iam import GetPolicyDocumentStatementArgs, RolePolicy
 from pulumi_aws.iam.get_policy_document import get_policy_document
-from pulumi_aws.s3 import BucketNotificationLambdaFunctionArgs
+from pulumi_aws.s3 import BucketNotificationLambdaFunctionArgs, BucketNotification
 
 from data_engineering_exports.utils import load_yaml
 
@@ -269,4 +269,40 @@ def make_notification_lambda_args(
         lambda_function_arn=dataset.lambda_function._function.arn,
         events=["s3:ObjectCreated:*"],
         filter_prefix=f"{dataset.name}/",
+    )
+
+
+def make_combined_bucket_notification(
+    name: str, export_bucket: Bucket, datasets: PushExportDatasets
+) -> BucketNotification:
+    """Create a combined BucketNotification for the export bucket, based on all the
+    push datasets that can export from it.
+
+    Parameters
+    ----------
+    name : str
+        What to call the resulting BucketNotification.
+    export_bucket : Bucket
+        The Pulumi Bucket object representing the AWS resource.
+    datasets : PushExportDatasets
+        The push datasets to create notifications for - must already have run
+        build_lambda_functions.
+
+    Returns
+    -------
+    BucketNotification
+        A single BucketNotification for the export bucket, containing a
+        BucketNotificationLambdaFunctionArgs for each of the Lambda functions that use
+        the export bucket.
+    """
+    return BucketNotification(
+        resource_name=name,
+        bucket=export_bucket.id,
+        lambda_functions=[make_notification_lambda_args(d) for d in datasets.datasets],
+        opts=ResourceOptions(
+            depends_on=[
+                lambda_function._function for lambda_function in datasets.lambdas
+            ]
+            + [export_bucket]
+        ),
     )

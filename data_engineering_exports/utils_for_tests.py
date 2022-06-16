@@ -1,8 +1,9 @@
-from json import dumps
+import json
 import pkg_resources
-from typing import Callable
+from typing import Callable, List
 
 from pulumi import automation as auto
+from pulumi_aws.iam import Role
 import yaml
 
 
@@ -93,13 +94,11 @@ class PulumiTestInfrastructure:
 
     def _pulumi_up(self):
         print("Updating stack")
-        # No parallel processing, to avoid conflicts on the resources
-        # TODO: check if parallel might work when using localstack
         try:
-            up_results = self.stack.up(parallel=1, on_output=print)
+            up_results = self.stack.up(parallel=4, on_output=print)
             print(
                 f"Update summary: "
-                f"\n{dumps(up_results.summary.resource_changes, indent=4)}"
+                f"\n{json.dumps(up_results.summary.resource_changes, indent=4)}"
             )
             return up_results
 
@@ -112,4 +111,59 @@ class PulumiTestInfrastructure:
         return self
 
     def __exit__(self, type, value, traceback):
+        # Destroy the stack's resources
+        self.stack.destroy()
         print("Tests complete - exiting Pulumi test infrastructure")
+
+
+def mock_alpha_user(username: str, account: str = "000000000000") -> Role:
+    """Create a Pulumi Role that resembles an Analytical Platform alpha user.
+
+    Parameters
+    ----------
+    username : str
+        Username for the role. Starts with "alpha_user" on the real Analytical Platform.
+    account : str (default 000000000000)
+        String of 12 digits representing the AWS account number.
+
+    Returns
+    -------
+    Role
+        A Pulumi Role that creates an AWS IAM role.
+    """
+    return Role(
+        resource_name=username,
+        name=username,
+        assume_role_policy=json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {"AWS": f"arn:aws:sts::{account}:user/localstack"},
+                        "Action": "sts:AssumeRole",
+                    }
+                ],
+            }
+        ),
+    )
+
+
+def check_bucket_contents(
+    bucket_name: str, expected_keys: List[str], s3_client
+) -> None:
+    """Assert that contents of bucket_name match the list of filenames in expected_keys.
+
+    When importing using this in pytest, by default it won't display the full
+    AssertionError text on a fail. To solve this, add this to the __init__.py
+    in the test directory:
+
+    pytest.register_assert_rewrite('utils_for_tests')
+    """
+    bucket_contents = s3_client.list_objects_v2(Bucket=bucket_name)
+    if expected_keys:
+        assert [
+            item["Key"] for item in bucket_contents.get("Contents")
+        ] == expected_keys
+    else:
+        assert not bucket_contents.get("Contents")
