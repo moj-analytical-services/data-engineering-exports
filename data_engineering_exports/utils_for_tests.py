@@ -150,20 +150,37 @@ def mock_alpha_user(username: str, account: str = "000000000000") -> Role:
 
 
 def check_bucket_contents(
-    bucket_name: str, expected_keys: List[str], s3_client
+    bucket_name: str, expected_keys: List[str], s3_client, print_contents: bool = False
 ) -> None:
     """Assert that contents of bucket_name match the list of filenames in expected_keys.
-
     When importing using this in pytest, by default it won't display the full
     AssertionError text on a fail. To solve this, add this to the __init__.py
     in the test directory:
-
     pytest.register_assert_rewrite('utils_for_tests')
+
+    Parameters
+    ----------
+    bucket_name : str
+        Name of the bucket to look in.
+    expected_keys : List[str]
+        Keys of the files that should be in the bucket (path excluding bucket name)
+    s3_client
+        Boto3 s3 client object
+    print_contents : bool
+        Whether to print a list of the files in the bucket - defaults to false.
+
+    Returns
+    -------
+    None, but asserts whether expected and actual contents match.
     """
-    bucket_contents = s3_client.list_objects_v2(Bucket=bucket_name)
+    bucket_response = s3_client.list_objects_v2(Bucket=bucket_name)
+    bucket_contents = [item["Key"] for item in bucket_response.get("Contents", [])]
+    if print_contents:
+        print(f"Contents of bucket {bucket_name}:")
+        print(bucket_contents)
     if expected_keys:
-        assert [
-            item["Key"] for item in bucket_contents.get("Contents")
-        ] == expected_keys
+        assert bucket_contents == sorted(
+            expected_keys
+        )  # list_objects_v2 already sorted
     else:
-        assert not bucket_contents.get("Contents")
+        assert not bucket_contents
