@@ -29,22 +29,22 @@ Users should make requests in the form of pull requests, [as described in the re
 
 7. Ask the user to test the export - including making sure the Performance Hub get the test file, as we can't see the Performance Hub bucket ourselves
 
-## Running end-to-end tests
+## Running tests
 
-End-to-end tests run using Localstack, which creates a mock AWS environment. The test infrastructure should behave like real resources, but none of it needs access to a real AWS account.
+There are normal unit tests that mock Pulumi resources. There is also an end-to-end test that uses Localstack, which creates a mock AWS environment. The test infrastructure should behave like real resources, but none of it needs access to a real AWS account.
 
-The tests are are stored in the `tests_end_to_end/` directory. They should run automatically when you open a pull request.
+The tests should run automatically when you open a pull request.
 
-To run the end-to-end tests locally:
+To run just the unit tests, run `pytest tests -k "not end_to_end" --disable-warnings -vv`
+
+To include the end-to-end test:
 
 1. install and open Docker
 2. install packages from the dev requirements file: `pip install -r requirements-dev.txt`
 3. navigate to your project directory and activate your virtual environment
-4. in your terminal, run `localstack start`
+4. in your terminal, run `docker-compose up`
 5. open another terminal window and again navigate to your project directory
 6. log into your local Pulumi backend with `pulumi login --local` (so it doesn't try to connect to our S3-stored Pulumi backends)
-7. run tests with `pytest tests_end_to_end/ --disable-warnings -vv`
+7. run tests with `pytest tests --disable-warnings -vv`
 
-When running locally you should restart Localstack between test runs. In its terminal window, press `ctrl-c` to sto it, then run `localstack start` again.
-
-Otherwise the Localstack container will still contain resources created from your last test run.
+If you have problems with the tests, try restarting Localstack between test runs. In its terminal window, press `ctrl-c` to stop it, then run `localstack start` again. You shouldn't _have_ to do this, as resources will be destroyed after each test run, but it can be useful as it will completely destroy and recreate your fake AWS environment.
