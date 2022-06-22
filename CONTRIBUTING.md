@@ -25,7 +25,7 @@ Users should make requests in the form of pull requests, [as described in the re
 
 5. Deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441))
 
-6. If creating a push bucket, get the owner of that bucket to grant put permission to the role arn for the relevant project - you can find this in the stack's Pulumi outputs
+6. If creating a push bucket, get the owner of that bucket to grant put permission to the role ARN for the relevant project - you can find this in the stack's Pulumi outputs
 
 7. Ask the user to test the export - including making sure the Performance Hub get the test file, as we can't see the Performance Hub bucket ourselves
 

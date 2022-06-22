@@ -83,7 +83,7 @@ class PushExportDatasets:
             for dataset in self.datasets:
                 dataset.build_lambda_function()
                 self.lambdas.append(dataset.lambda_function)
-                export(  # Have Pulumi export the arn of the role for each Lambda
+                export(  # Have Pulumi export the ARN of the role for each Lambda
                     name=f"{dataset.name}_lambda_role_arn",
                     value=dataset.lambda_function._role.arn,
                 )
@@ -249,7 +249,7 @@ class WriteToExportBucketRolePolicy:
 def make_notification_lambda_args(
     dataset: PushExportDataset,
 ) -> BucketNotificationLambdaFunctionArgs:
-    """Turn dataset name and Lambda arn into a BucketNotificationLambdaFunctionArgs.
+    """Turn dataset name and Lambda ARN into a BucketNotificationLambdaFunctionArgs.
 
     Needed because MoveObjectLambda and similar try to create a BucketNotification for
     each Lambda (and therefore each prefix). But Pulumi only allows one

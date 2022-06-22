@@ -34,7 +34,7 @@ Only use lower case and underscores in your dataset name.
     - alpha_user_two
 ```
 
-4. For a pull dataset, you must also add the Amazon Web Services 'Arns' of the roles that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this:
+4. For a pull dataset, you must also add the Amazon Web Services 'ARNs' of the roles that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this:
 
 ``` yaml
   name: new_project
@@ -68,7 +68,7 @@ You will be given a bucket called `mojap-new-project` - the name of your project
 
 The users in your dataset file will have read and write access to this bucket.
 
-The 'pull Arns' in your dataset file have read-only access to the bucket.
+The 'pull ARNs' in your dataset file have read-only access to the bucket.
 
 ## Reporting bugs and asking for features
 

@@ -56,7 +56,7 @@ def pulumi_program():
         "test-bucket-notification", test_export_bucket, datasets
     )
 
-    # Export the role arns for the users and Lambda functions
+    # Export the role ARNs for the users and Lambda functions
     export("user_role_1", user_1.arn)
     export("user_role_2", user_2.arn)
     export("lambda_role_0", datasets.lambdas[0]._role.arn)
