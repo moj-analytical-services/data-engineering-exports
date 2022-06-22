@@ -35,7 +35,7 @@ There are normal unit tests that mock Pulumi resources. There is also an end-to-
 
 The tests should run automatically when you open a pull request.
 
-To run just the unit tests, run `pytest tests -k "not end_to_end" --disable-warnings -vv`
+To run just the unit tests, run `pytest tests -vv -k "not end_to_end" -W ignore::DeprecationWarning`
 
 To include the end-to-end test:
 
@@ -45,6 +45,6 @@ To include the end-to-end test:
 4. in your terminal, run `docker-compose up`
 5. open another terminal window and again navigate to your project directory
 6. log into your local Pulumi backend with `pulumi login --local` (so it doesn't try to connect to our S3-stored Pulumi backends)
-7. run tests with `pytest tests --disable-warnings -vv`
+7. run tests with `pytest tests -vv -W ignore::DeprecationWarning`
 
 If you have problems with the tests, try restarting Localstack between test runs. In its terminal window, press `ctrl-c` to stop it, then run `localstack start` again. You shouldn't _have_ to do this, as resources will be destroyed after each test run, but it can be useful as it will completely destroy and recreate your fake AWS environment.
