@@ -158,7 +158,6 @@ class PushExportDataset:
         ----------
         filepath : Union[str, Path]
             Location of the yaml file to be loaded as a dataset.
-                config : Dict[str, Union[str, List[str]]]
         export_bucket : Bucket
             The bucket the data will be exported from.
         tagger : Tagger
@@ -202,8 +201,6 @@ class PushExportDataset:
 class WriteToExportBucketRolePolicy:
     """Create a role policy to allow an existing role to write to part of an export
     bucket. An export bucket is a bucket whose contents will be sent to other platforms.
-
-    No methods, and only one attribute: .arn, the role policy's AWS identifier.
     """
 
     def __init__(self, username: str, export_bucket: Bucket, prefixes: List[str]):

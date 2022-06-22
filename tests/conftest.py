@@ -1,11 +1,13 @@
-from typing import Tuple
+from typing import List, Dict
 
 import pulumi
 import pytest
 
 
 class Mocks(pulumi.runtime.Mocks):
-    def new_resource(self, args: pulumi.runtime.MockResourceArgs) -> Tuple[str, dict]:
+    def new_resource(
+        self, args: pulumi.runtime.MockResourceArgs
+    ) -> List[str, Dict[str, Dict[str, str]]]:
         if args.typ == "aws:s3/bucket:Bucket":
             state = {"arn": f"arn:aws:s3:::{args.inputs['bucket']}"}
             return [args.name, dict(args.inputs, **state)]

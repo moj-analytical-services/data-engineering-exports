@@ -2,7 +2,7 @@ from data_engineering_pulumi_components.aws import Bucket
 from data_engineering_pulumi_components.utils import Tagger
 from pulumi import ResourceOptions, get_stack, export, Output
 from pulumi_aws.iam import RolePolicy
-from pulumi_aws.s3 import BucketPolicy, BucketNotification
+from pulumi_aws.s3 import BucketPolicy
 
 import data_engineering_exports.pull as pull
 import data_engineering_exports.push as push
