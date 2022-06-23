@@ -1,0 +1,4 @@
+name: test_dataset
+target_bucket: test-bucket
+users:
+  - alpha_user_test_person

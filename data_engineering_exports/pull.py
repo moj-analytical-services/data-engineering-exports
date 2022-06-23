@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 from pulumi_aws.iam import (
     GetPolicyDocumentStatementArgs,
@@ -11,15 +11,15 @@ from pulumi_aws.iam.get_policy_document import (
 
 
 def create_pull_bucket_policy(args: Dict[str, str]) -> AwaitableGetPolicyDocumentResult:
-    """Create policy for a bucket to permit get access for a specific list of Arns.
-    The Arns can be from another account.
+    """Create policy for a bucket to permit get access for a specific list of ARNs.
+    The ARNs can be from another account.
 
     Parameters
     ----------
     args : dict
         Should contain 2 keys:
-        - bucket_arn (str): Arn of the bucket to attach the policy to.
-        - pull_arns (list): list of Arns that should be allowed to read from the bucket.
+        - bucket_arn (str): ARN of the bucket to attach the policy to.
+        - pull_arns (list): list of ARNs that should be allowed to read from the bucket.
 
     Returns
     -------
@@ -67,7 +67,7 @@ def create_read_write_role_policy(
     ----------
     args : dict
         Should contain 1 key:
-        - bucket_arn (str): Arn of the bucket to attach the policy to.
+        - bucket_arn (str): ARN of the bucket to attach the policy to.
 
     Returns
     -------

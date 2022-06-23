@@ -29,4 +29,4 @@ jobs:
         env:
           AUTHORISATION_TOKEN: ${{ secrets.AUTHORISATION_TOKEN }}
         run: |
-          if [ -d tests ]; then pytest tests/ -vv --disable-warnings; fi
+          pytest tests/ -k "not end_to_end" -vv -W ignore::DeprecationWarning

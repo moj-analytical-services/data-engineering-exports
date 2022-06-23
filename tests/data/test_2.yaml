@@ -1,0 +1,6 @@
+name: test_dataset_2
+target_bucket: test-bucket-2
+keep_files: true
+users:
+  - alpha_user_test_person
+  - alpha_user_test_person_2

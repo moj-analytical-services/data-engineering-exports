@@ -1,0 +1,5 @@
+name: push_test_2
+target_bucket: target-bucket-2
+users:
+  - alpha_user_test_1
+  - alpha_user_test_2

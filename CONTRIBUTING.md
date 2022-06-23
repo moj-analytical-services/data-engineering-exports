@@ -25,24 +25,28 @@ Users should make requests in the form of pull requests, [as described in the re
 
 5. Deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441))
 
-6. Ask the user to test the export - including making sure the Performance Hub get the test file, as we can't see the Performance Hub bucket ourselves
+6. If creating a push bucket, get the owner of that bucket to grant put permission to the role ARN for the relevant project - you can find this in the stack's Pulumi outputs
 
-## Running end-to-end tests
+7. Ask the user to test the export - including making sure the Performance Hub get the test file, as we can't see the Performance Hub bucket ourselves
 
-End-to-end tests run using Localstack, which creates a mock AWS environment. The test infrastructure should behave like real resources, but none of it needs access to a real AWS account.
+## Running tests
 
-The tests are are stored in the `tests_end_to_end/` directory. They should run automatically when you open a pull request.
+There are normal unit tests that mock Pulumi resources. There is also an end-to-end test that uses Localstack, which creates a mock AWS environment. The test infrastructure should behave like real resources, but none of it needs access to a real AWS account.
 
-To run the end-to-end tests locally:
+The tests should run automatically when you open a pull request.
+
+To run just the unit tests, run `pytest tests -vv -k "not end_to_end" -W ignore::DeprecationWarning`
+
+To include the end-to-end test:
 
 1. install and open Docker
 2. install packages from the dev requirements file: `pip install -r requirements-dev.txt`
 3. navigate to your project directory and activate your virtual environment
-4. in your terminal, run `localstack start`
+4. in your terminal, run `docker-compose up`
 5. open another terminal window and again navigate to your project directory
 6. log into your local Pulumi backend with `pulumi login --local` (so it doesn't try to connect to our S3-stored Pulumi backends)
-7. run tests with `pytest tests_end_to_end/ --disable-warnings -vv`
+7. run tests with `pytest tests -vv -W ignore::DeprecationWarning`
 
-When running locally you should restart Localstack between test runs. In its terminal window, press `ctrl-c` to sto it, then run `localstack start` again.
+If you get warnings that `Other threads are currently calling into gRPC, skipping fork() handlers`, you can suppress them by setting `export GRPC_ENABLE_FORK_SUPPORT=0`.
 
-Otherwise the Localstack container will still contain resources created from your last test run.
+If you have problems with the tests, try restarting Localstack between test runs. In its terminal window, press `ctrl-c` to stop it, then run `localstack start` again. You shouldn't _have_ to do this, as resources will be destroyed after each test run, but it can be useful as it will completely destroy and recreate your fake AWS environment.

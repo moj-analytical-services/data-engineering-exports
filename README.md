@@ -24,16 +24,17 @@ Only use lower case and underscores in your dataset name.
 
 1. Create a new branch in this repository called either `push_dataset/<<new_project>>` or `pull_dataset/<<new_project>>`
 2. Create a new file in either `pull_datasets` or `push_datasets` called `new_project.yaml`
-3. Add your project name and list of Analytical Platform usernames to the new file, like this:
+3. Add your project name, target bucket (the bucket you want the files to go to) and list of Analytical Platform usernames to the new file, like this:
 
 ``` yaml
   name: new_project
+  bucket: target-bucket-name
   users:
     - alpha_user_one
     - alpha_user_two
 ```
 
-4. For a pull dataset, you must also add the Amazon Web Services 'Arns' of the roles that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this:
+4. For a pull dataset, you must also add the Amazon Web Services 'ARNs' of the roles that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this:
 
 ``` yaml
   name: new_project
@@ -59,7 +60,7 @@ You must include the project name in the path. For example, you could write a fi
 
 For how to move files, see the Analytical Platform guide to [writing to an S3 bucket](https://user-guidance.services.alpha.mojanalytics.xyz/data/data-faqs/#how-do-i-read-write-data-from-an-s3-bucket).
 
-After you send files to this location they will be copied to the Performance Hub then deleted.
+After you send files to this location they will be copied to your target bucket, then deleted from `mojap-hub-exports`.
 
 ## Exporting data from a pull bucket
 
@@ -67,7 +68,7 @@ You will be given a bucket called `mojap-new-project` - the name of your project
 
 The users in your dataset file will have read and write access to this bucket.
 
-The 'pull Arns' in your dataset file have read-only access to the bucket.
+The 'pull ARNs' in your dataset file have read-only access to the bucket.
 
 ## Reporting bugs and asking for features
 
