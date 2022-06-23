@@ -47,4 +47,6 @@ To include the end-to-end test:
 6. log into your local Pulumi backend with `pulumi login --local` (so it doesn't try to connect to our S3-stored Pulumi backends)
 7. run tests with `pytest tests -vv -W ignore::DeprecationWarning`
 
+If you get warnings that `Other threads are currently calling into gRPC, skipping fork() handlers`, you can suppress them by setting `export GRPC_ENABLE_FORK_SUPPORT=0`.
+
 If you have problems with the tests, try restarting Localstack between test runs. In its terminal window, press `ctrl-c` to stop it, then run `localstack start` again. You shouldn't _have_ to do this, as resources will be destroyed after each test run, but it can be useful as it will completely destroy and recreate your fake AWS environment.
