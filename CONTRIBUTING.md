@@ -17,19 +17,21 @@ You may also need to set `export PULUMI_CONFIG_PASSPHRASE=""` if you've changed 
 
 Users should make requests in the form of pull requests, [as described in the readme](README.md).
 
-1. Check the Performance Hub expect and are happy with the proposed exports (there's a ticket to [automate asking for Performance Hub approval](https://dsdmoj.atlassian.net/browse/PDE-1518))
+1. Check the team who run the destination system expect and are happy with the proposed exports.
 
-2. Check the user-submitted yaml file is correct.
+2. Make sure your users have a data protection impact agreement or similar document confirming the export is okay. Your users are responsible for writing this and getting it approved.
 
-3. Run `pulumi preview` to check the resources look correct
+3. Either write a new config yaml file or check that a user-submitted one is correct.
 
-4. Approve and merge the pull request
+3. Run `pulumi preview` to check the resources look correct.
 
-5. Deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441))
+4. Approve and merge the pull request. Or ask your users to approve it if you've written the config file for them.
 
-6. If creating a push bucket, get the owner of that bucket to grant put permission to the role ARN for the relevant project - you can find this in the stack's Pulumi outputs
+5. Deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441)).
 
-7. Ask the user to test the export - including making sure the Performance Hub get the test file, as we can't see the Performance Hub bucket ourselves
+6. If creating a push bucket, get the owner of that bucket to grant put permission to the role ARN for the relevant project. You can find the ARN in the stack's Pulumi outputs.
+
+7. Ask the user to test the export. This should include making sure the destination system gets the test file, as we can't see the destination buckets ourselves.
 
 ## Running tests
 
