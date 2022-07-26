@@ -11,6 +11,8 @@ Then install the pre-commit hooks with `pre-commit install`.
 3. Run `pulumi stack select` and pick `data-engineering-exports`
 4. Run `pulumi stack` to check you can see what's currently deployed
 
+You may also need to set `export PULUMI_CONFIG_PASSPHRASE=""` if you've changed this for other projects.
+
 ## Check and deploy user changes
 
 Users should make requests in the form of pull requests, [as described in the readme](README.md).
