@@ -2,7 +2,7 @@
 
 This repository lets you export data from the Analytical Platform to other platforms. For now, this means the HMPPS Performance Hub or the Ministry of Justice Cloud Platform. Message us on the #ask-data-engineering Slack channel if you want to connect to somewhere else.
 
-You must have a data protection impact assessment, data sharing agreement or similar documentation confirming you can transfer the data to the destination.
+You must have a data protection impact assessment (DPIA), data sharing agreement or similar documentation confirming you can transfer the data to the destination.
 
 ## Ways to export
 
@@ -26,7 +26,7 @@ Only use lower case and underscores in your dataset name.
 
 1. Create a new branch in this repository called either `push_dataset/<<new_project>>` or `pull_dataset/<<new_project>>`
 2. Create a new file in either `pull_datasets` or `push_datasets` called `new_project.yaml`
-3. Add your project name, target bucket (the bucket you want the files to go to), list of Analytical Platform usernames, and link to your data protection impact assessment, like this:
+3. Add your project name, target bucket (the bucket you want the files to go to), list of Analytical Platform usernames, and link to your DPIA, like this:
 
 ``` yaml
   name: new_project
@@ -34,7 +34,7 @@ Only use lower case and underscores in your dataset name.
   users:
     - alpha_user_one
     - alpha_user_two
-  paperwork: link to your data protection impact assessment
+  paperwork: link to your DPIA
 ```
 
 4. For a pull dataset, you must also add the Amazon Web Services 'ARNs' of the roles that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this:
@@ -47,7 +47,7 @@ Only use lower case and underscores in your dataset name.
   users:
     - alpha_user_one
     - alpha_user_two
-  paperwork: link to your data protection impact assessment
+  paperwork: link to your DPIA
 ```
 
 5. Commit the file and push it to GitHub

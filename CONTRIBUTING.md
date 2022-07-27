@@ -19,19 +19,19 @@ Users should make requests in the form of pull requests, [as described in the re
 
 1. Check the team who run the destination system expect and are happy with the proposed exports.
 
-2. Make sure your users have a data protection impact agreement or similar document confirming the export is okay. Your users are responsible for writing this and getting it approved.
+2. Make sure your users have a data protection impact assessment (DPIA) or similar document confirming the export is okay. Your users are responsible for writing this and getting it approved.
 
 3. Either write a new config yaml file or check that a user-submitted one is correct.
 
-3. Run `pulumi preview` to check the resources look correct.
+4. Run `pulumi preview` to check the resources look correct.
 
-4. Approve and merge the pull request. Or ask your users to approve it if you've written the config file for them.
+5. Approve and merge the pull request. Or ask your users to approve it if you've written the config file for them.
 
-5. Deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441)).
+6. Deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441)).
 
-6. If creating a push bucket, get the owner of that bucket to grant put permission to the role ARN for the relevant project. You can find the ARN in the stack's Pulumi outputs.
+7. If creating a push bucket, get the owner of that bucket to grant put permission to the role ARN for the relevant project. You can find the ARN in the stack's Pulumi outputs.
 
-7. Ask the user to test the export. This should include making sure the destination system gets the test file, as we can't see the destination buckets ourselves.
+8. Ask the user to test the export. This should include making sure the destination system gets the test file, as we can't see the destination buckets ourselves.
 
 ## Running tests
 
