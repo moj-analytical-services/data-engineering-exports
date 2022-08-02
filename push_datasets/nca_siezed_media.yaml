@@ -1,0 +1,6 @@
+name: nca_siezed_media
+target_bucket: damo-dev-moj-hmpps-data-dirty-bucket
+users:
+  - alpha_user_vonbraunbates
+  - alpha_user_calumabarnett
+paperwork: MOU signed by Nikki Brown
