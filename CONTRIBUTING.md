@@ -1,6 +1,6 @@
 # Contributing to data engineering hub exports
 
-To get started, set up a new virtual environment and `pip install -r requirements.txt`.
+To get started, set up a new virtual environment and both `pip install -r requirements.txt` and  `pip install -r requirements-dev.txt`.
 
 Then install the pre-commit hooks with `pre-commit install`.
 
