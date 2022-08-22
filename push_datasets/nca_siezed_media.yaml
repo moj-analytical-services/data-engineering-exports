@@ -1,5 +1,5 @@
 name: nca_siezed_media
-target_bucket: damo-dev-moj-hmpps-data-dirty-bucket
+target_bucket: damo-central-test-moj-hmpps-data-dirty-bucket
 users:
   - alpha_user_vonbraunbates
   - alpha_user_calumabarnett
