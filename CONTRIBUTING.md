@@ -1,12 +1,17 @@
 # Contributing to data engineering hub exports
 
-To get started, set up a new virtual environment and both `pip install -r requirements.txt` and  `pip install -r requirements-dev.txt`.
+To get started, either set up a new virtual environment:
+`python3 -m venv`
+or activate the existing one:
+`source ./env/bin/activate`
+Install the packages. If `which pip` returns an error message about pip not found, use `pip3` instead of `pip` in the followng line: 
+`pip install -r requirements.txt && pip install -r requirements-dev.txt`.
 
 Then install the pre-commit hooks with `pre-commit install`.
 
 ## Access the Pulumi stack
 
-1. Activate the `restricted-admin-data` AWS role
+1. Activate the `restricted-admin-data` AWS role (see [instructions](https://dsdmoj.atlassian.net/wiki/spaces/DE/pages/3862331895/Set+up+AWS+access#Config-file-for-prisons-and-probation) if this isn't already configured):
 2. Log in to the Pulumi backend with `pulumi login s3://data-engineering-pulumi.analytics.justice.gov.uk`
 3. Run `pulumi stack select` and pick `data-engineering-exports`
 4. Run `pulumi stack` to check you can see what's currently deployed
