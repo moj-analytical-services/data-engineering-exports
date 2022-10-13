@@ -42,6 +42,6 @@ jobs:
         env:
           PULUMI_CONFIG_PASSPHRASE: ""
         run: |
-          pulumi stack data-engineering-exports
+          pulumi stack select data-engineering-exports
           pulumi refresh --yes
           pulumi preview 
