@@ -5,6 +5,7 @@ on:
       - main
 env:
   AWS_ROLE_TO_ASSUME: arn:aws:iam::189157455002:role/github-actions-infrastructure
+  DATA_ROLE: arn:aws:iam::593291632749:role/restricted-admin
 jobs:
   preview-stack:
     name: Preview Stack
@@ -22,11 +23,18 @@ jobs:
           unzip awscliv2.zip
           sudo ./aws/install --update
           aws --version
-      - name: Configure AWS Credentials
+      - name: Configure root AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: eu-west-1
           role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          role-skip-session-tagging: true
+          role-duration-seconds: 3600
+      - name: Configure data AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{ env.DATA_ROLE }}
           role-skip-session-tagging: true
           role-duration-seconds: 3600
       - name: Set up Python
