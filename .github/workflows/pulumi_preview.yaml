@@ -8,7 +8,6 @@ env:
 jobs:
   preview-stack:
     name: Preview Stack
-    needs: get-stacks
     runs-on: [self-hosted, management-infrastructure]
     strategy:
       fail-fast: false
