@@ -44,6 +44,7 @@ for file in pull_config_files:
     pull_bucket = Bucket(
         name=f"mojap-{name}",
         tagger=tagger,
+        opts=ResourceOptions(provider=utils.dataProvider),
     )
 
     # Add bucket policy allowing the specified arn to read
@@ -54,7 +55,7 @@ for file in pull_config_files:
         resource_name=f"{name}-bucket-policy",
         bucket=pull_bucket.id,
         policy=bucket_policy.json,
-        opts=ResourceOptions(parent=pull_bucket),
+        opts=ResourceOptions(parent=pull_bucket, provider=utils.dataProvider),
     )
 
     # Add role policy for each user
@@ -67,4 +68,5 @@ for file in pull_config_files:
             policy=role_policy.json,
             role=user,
             name=f"hub-exports-pull-{name}",
+            opts=ResourceOptions(provider=utils.dataProvider),
         )

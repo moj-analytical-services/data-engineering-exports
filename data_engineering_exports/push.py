@@ -15,7 +15,7 @@ from pulumi_aws.iam import GetPolicyDocumentStatementArgs, RolePolicy
 from pulumi_aws.iam.get_policy_document import get_policy_document
 from pulumi_aws.s3 import BucketNotificationLambdaFunctionArgs, BucketNotification
 
-from data_engineering_exports.utils import load_yaml
+from data_engineering_exports.utils import load_yaml, dataProvider
 
 
 class UsersNotLoadedError(Exception):
@@ -184,6 +184,7 @@ class PushExportDataset:
             tagger=self.tagger,
             prefix=self.name,
             create_notification=False,
+            opts=ResourceOptions(provider=dataProvider),
         )
 
     def _build_copy_object_function(self):
@@ -195,6 +196,7 @@ class PushExportDataset:
             tagger=self.tagger,
             prefix=self.name,
             create_notification=False,
+            opts=ResourceOptions(provider=dataProvider),
         )
 
 

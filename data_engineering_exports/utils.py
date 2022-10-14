@@ -4,6 +4,19 @@ from typing import List, Dict, Union, Any
 import yaml
 
 
+from pulumi_aws import Provider, ProviderAssumeRoleArgs, get_region
+
+current = get_region()
+
+dataProvider = Provider(
+    resource_name="data",
+    assume_role=ProviderAssumeRoleArgs(
+        role_arn="arn:aws:iam::593291632749:role/DataEngineeringGitHubAction"
+    ),
+    region=current.name,
+)
+
+
 def list_yaml_files(folder_name: str) -> List[Path]:
     """Get a list of yaml files in a specific folder.
 
