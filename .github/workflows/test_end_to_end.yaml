@@ -13,6 +13,8 @@ jobs:
         ports:
           - 4566:4566
           - 4571:4571
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
