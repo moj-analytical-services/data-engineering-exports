@@ -32,7 +32,7 @@ jobs:
       - name: Get Pulumi version
         id: get-pulumi-version
         run: |
-          echo "::set-output name=PULUMI_VERSION::$(python .github/workflows/scripts/get_pulumi_version.py)"
+          echo "name=PULUMI_VERSION::$(python .github/workflows/scripts/get_pulumi_version.py)" >> $GITHUB_OUTPUT
       - name: Remove existing Pulumi installations
         run: |
           rm -rf $HOME/.pulumi
