@@ -71,7 +71,7 @@ class PulumiTestInfrastructure:
             opts=auto.LocalWorkspaceOptions(
                 project_settings=auto.ProjectSettings(
                     name=self.stack_name,
-                    runtime=auto.ProjectRuntimeInfo(name="python"),
+                    runtime="python",
                 ),
                 env_vars={
                     "AWS_SECRET_ACCESS_KEY": "test_secret",

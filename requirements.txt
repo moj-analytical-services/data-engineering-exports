@@ -1,8 +1,8 @@
 boto3>=1.17.0,<2.0.0
-data-engineering-pulumi-components==0.3.2.dev17
+data-engineering-pulumi-components<1.0.0
 dataengineeringutils3>=1.1.0,<2.0.0
-pulumi==3.22.1
-pulumi-aws>=4.0.0,<5.0.0
-pulumi-local==0.3
+pulumi>=3.0.0,<4.0.0
+pulumi-aws>=5.0.0,<6.0.0
+pulumi-local<1.0.0
 pytest~=7.1.0
 PyYAML>=6.0.0,<7.0.0
