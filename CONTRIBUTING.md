@@ -1,6 +1,27 @@
 # Contributing to data engineering hub exports
 
-To get started, either set up a new virtual environment:
+## Check user changes and update the code
+
+Users should make requests in the form of pull requests, [as described in the readme](README.md).
+
+1. Check the team who run the destination system expect and are happy with the proposed exports.
+
+2. Make sure your users have a data protection impact assessment (DPIA) or similar document confirming the export is okay. Your users are responsible for writing this and getting it approved.
+
+3. If creating a push bucket, get the owner of that bucket to grant put permission to the role ARN for the relevant project. You can find the ARN in the stack's Pulumi outputs.
+
+Either:
+4. write a new config yaml file, create the relevant pull request, then ask your users to approve
+
+or
+
+5. check that a user-submitted config file is correct, approve the corresponding pull request
+
+6. Merge to main **and pull to your local machine** (since pulumi will operate on the locally-held version of your code).
+
+## Pre-requisites
+
+Either set up a new virtual environment:
 `python3 -m venv`
 or activate the existing one:
 `source ./env/bin/activate`
@@ -15,28 +36,12 @@ Then install the pre-commit hooks with `pre-commit install`.
 2. Log in to the Pulumi backend with `pulumi login s3://data-engineering-pulumi.analytics.justice.gov.uk`
 3. Run `pulumi stack select` and pick `data-engineering-exports`
 4. Run `pulumi stack` to check you can see what's currently deployed
+5. Run `pulumi preview` to check the resources look correct.
+6. Deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441)).
 
 You may also need to set `export PULUMI_CONFIG_PASSPHRASE=""` if you've changed this for other projects.
 
-## Check and deploy user changes
-
-Users should make requests in the form of pull requests, [as described in the readme](README.md).
-
-1. Check the team who run the destination system expect and are happy with the proposed exports.
-
-2. Make sure your users have a data protection impact assessment (DPIA) or similar document confirming the export is okay. Your users are responsible for writing this and getting it approved.
-
-3. Either write a new config yaml file or check that a user-submitted one is correct.
-
-4. Run `pulumi preview` to check the resources look correct.
-
-5. Approve and merge the pull request. Or ask your users to approve it if you've written the config file for them.
-
-6. Deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441)).
-
-7. If creating a push bucket, get the owner of that bucket to grant put permission to the role ARN for the relevant project. You can find the ARN in the stack's Pulumi outputs.
-
-8. Ask the user to test the export. This should include making sure the destination system gets the test file, as we can't see the destination buckets ourselves.
+7. Ask the user to test the export. This should include making sure the destination system gets the test file, as we can't see the destination buckets ourselves.
 
 ## Running tests
 
