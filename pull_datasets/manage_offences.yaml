@@ -1,4 +1,4 @@
-name: manage_offences
+name: manage-offences
 pull_arns:
   - arn:aws:iam::754256621582:role/cloud-platform-7314e881eab2f63a-live
 users:
