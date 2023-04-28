@@ -13,9 +13,8 @@ jobs:
         ports:
           - 4566:4566
           - 4571:4571
-    strategy:
-      fail-fast: false
-      max-parallel: 4
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -24,8 +23,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: "3.9"
-          cache: 'pip'
+          python-version: "3.10"
+          cache: pip
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -33,12 +32,12 @@ jobs:
       - name: Get Pulumi version
         id: get-pulumi-version
         run: |
-          echo "::set-output name=PULUMI_VERSION::$(python .github/workflows/scripts/get_pulumi_version.py)"
+          echo "name=PULUMI_VERSION::$(python .github/workflows/scripts/get_pulumi_version.py)" >> $GITHUB_OUTPUT
       - name: Remove existing Pulumi installations
         run: |
           rm -rf $HOME/.pulumi
       - name: Install Pulumi CLI
-        uses: pulumi/setup-pulumi@v2
+        uses: pulumi/actions@v4
         with:
           pulumi-version: ${{ steps.get-pulumi-version.outputs.PULUMI_VERSION }}
         continue-on-error: true

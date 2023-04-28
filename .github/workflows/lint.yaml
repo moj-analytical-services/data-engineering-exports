@@ -1,26 +1,19 @@
 name: Lint
 on:
   - pull_request
-
 jobs:
   preview:
     name: Lint
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.9, "3.10"]
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 1
-
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-
+          python-version: "3.10"
+          cache: pip
       - name: Check for flake8 config
         run: |
           if [ -e ./.flake8 ]; then
