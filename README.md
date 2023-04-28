@@ -16,7 +16,7 @@ Both are fine in principle - your team may prefer one or the other. Contact us o
 At the moment pull buckets only work if the other platform is also on Amazon Web Services. It isn't currently an option for Microsoft Azure or Google Cloud Platform. But contact us if you need one of these - we can add it, it just hasn't been needed yet.
 
 
-## Setting up exports
+## Setting up exports
 
 You can request either bucket type through this repository. The Analytical Platform has advice on [working with GitHub branches](https://user-guidance.services.alpha.mojanalytics.xyz/github.html#working-on-a-branch).
 
