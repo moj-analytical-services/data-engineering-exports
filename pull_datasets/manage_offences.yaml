@@ -1,5 +1,6 @@
 name: manage-offences
 pull_arns:
   - arn:aws:iam::754256621582:role/cloud-platform-7314e881eab2f63a-live
+  - arn:aws:iam::754256621582:role/cloud-platform-a3d565ec2c40a2c0-live
 users:
   - alpha_user_yasinmustafa
