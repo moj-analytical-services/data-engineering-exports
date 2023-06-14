@@ -1,6 +1,6 @@
 name: counter-terrorism-exports
 pull_arns:
-  - arn:aws:iam::754256621582:role/cloud-platform-RANDOM-STRING-live
+  - arn:aws:s3:::cloud-platform-5964c3d2f402dd1c22ef73502964eade
 users:
   - alpha_user_vonbraunbates
   - alpha_user_calumabarnett
