@@ -1,0 +1,8 @@
+name: bold-rr-ops
+pull_arns:
+  - arn:aws:iam::754256621582:role/cloud-platform-0bd2f454db950c2e-live
+users:
+  - alpha_user_mshodge
+  - alpha_user_andreassoteriadesmoj
+  - alpha_user_wmartin-gss
+  

@@ -236,7 +236,7 @@ class WriteToExportBucketRolePolicy:
             )
         )
         self._role_policy = RolePolicy(
-            resource_name=username,
+            resource_name=username + "_exports_push",
             policy=self._policy_document.json,
             role=username,
             name="hub_exports",
