@@ -1,6 +1,6 @@
 name: adjudications-insights
 pull_arns:
-  - arn:aws:iam::684969100054:role/restricted-admin
+  - arn:aws:iam::754256621582:role/cloud-platform-irsa-28885d6e937db127-live
 users:
   - alpha_user_lauratraceymoj
   - alpha_user_lucypitches
