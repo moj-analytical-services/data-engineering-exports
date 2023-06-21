@@ -1,6 +1,5 @@
 name: counter-terrorism-exports
 pull_arns:
-  - arn:aws:s3:::cloud-platform-5964c3d2f402dd1c22ef73502964eade
   - arn:aws:iam::754256621582:role/cloud-platform-irsa-b38fab67c2de57bd-live
 users:
   - alpha_user_vonbraunbates
