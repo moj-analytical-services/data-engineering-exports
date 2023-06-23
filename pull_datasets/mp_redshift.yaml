@@ -1,4 +1,4 @@
- name: mp_redshift
+ name: mp-redshift
  pull_arns:
    - arn:aws:iam::289153439536:role/wepi-iam-role-development-redshift-default
    
