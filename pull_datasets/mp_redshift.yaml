@@ -1,5 +1,6 @@
  name: mp_redshift
  pull_arns:
-   - arn:aws:redshift:eu-west-2:moj-modernisation-platform:cluster:wepi-redshift-development-cluster
+   - arn:aws:iam::289153439536:role/wepi-iam-role-development-redshift-default
+   
  users:
    - simonytta
