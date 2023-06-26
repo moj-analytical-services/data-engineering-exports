@@ -1,6 +1,7 @@
  name: mp-redshift
  pull_arns:
    - arn:aws:iam::289153439536:role/wepi-iam-role-development-redshift-default
+   - arn:aws:iam::289153439536:role/AWSGlueServiceRoleAbsenceCrawler
    
  users:
    - alpha_user_simonytta
