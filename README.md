@@ -26,7 +26,7 @@ Only use lower case and underscores in your dataset name.
 
 1. Create a new branch in this repository called either `push_dataset/<<new_project>>` or `pull_dataset/<<new_project>>`
 2. Create a new file in either `pull_datasets` or `push_datasets` called `new_project.yaml`
-3. Add your project name, target bucket (the bucket you want the files to go to), list of Analytical Platform usernames, and link to your DPIA, like this:
+3. Add your project name, target bucket (the bucket you want the files to go to  **without** the  `aws:arn:s3:::` prefix), list of Analytical Platform usernames, and link to your DPIA, like this:
 
 ``` yaml
   name: new_project
@@ -37,7 +37,7 @@ Only use lower case and underscores in your dataset name.
   paperwork: link to your DPIA
 ```
 
-4. For a pull dataset, you must also add the Amazon Web Services 'ARNs' of the roles that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this:
+4. For a pull dataset, you must also add the Amazon Web Services 'ARNs' of the **roles** (not the buckets) that should have access to the bucket. Talk to your Cloud Platform team to get these - or contact us to discuss it. Your config should end up looking like this:
 
 ``` yaml
   name: new_project
@@ -60,9 +60,11 @@ The data engineering team will check your changes, deploy them and tell you when
 
 The users in your dataset file will now have permission to add files to any path beginning with: `s3://mojap-hub-exports/new_project/`.
 
-You must include the project name in the path. For example, you could write a file to `s3://mojap-hub-exports/new_project/my_data.csv`, but not to `s3://mojap-hub-exports/my_data.csv`.
+You **must** include the project name in the path. For example, you could write a file to `s3://mojap-hub-exports/new_project/my_data.csv`, but not to `s3://mojap-hub-exports/my_data.csv`.  In the management console, you will not see the folder `s3://mojap-hub-exports/new_project/` until there is at least one file in it.
 
 For how to move files, see the Analytical Platform guide to [writing to an S3 bucket](https://user-guidance.services.alpha.mojanalytics.xyz/data/data-faqs/#how-do-i-read-write-data-from-an-s3-bucket).
+
+The owner of the receiving bucket must add permission to their bucket policy for the exporter to write (`PutObject` in AWS language) to that bucket.  Ther service role for the project `new_project` is `arn:aws:iam::593291632749:role/service-role/export_new_project-move`.
 
 After you send files to this location they will be copied to your target bucket, then deleted from `mojap-hub-exports`.
 
