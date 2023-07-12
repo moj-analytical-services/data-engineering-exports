@@ -76,6 +76,28 @@ The users in your dataset file will have read and write access to this bucket.
 
 The 'pull ARNs' in your dataset file have read-only access to the bucket.
 
+### Use with Cloud Platform
+
+This tool can be used to allow data from the Analytical Platform buckets to be read by the Cloud Platform. In order to do this, you need to setup a cross IAM role using terraform in the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments) repository (an example is [here](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/ops-pilot-test/resources/cross-iam-role-sa.tf)). The key part is:
+
+```
+resource "kubernetes_secret" "irsa" {
+  metadata {
+    name      = "irsa-output"
+    namespace = var.namespace
+  }
+  data = {
+    role           = module.irsa.aws_iam_role_name
+    serviceaccount = module.irsa.service_account_name.name
+  }
+```
+Once deployed, you can then get the IAM role using the following:
+
+`cloud-platform decode-secret -n <namespace> -s irsa-name`
+
+Once you have the `data` from the response. You can use this as your ARN in your `.yaml` file (note, the CP Account is `754256621582`)
+
+
 ## Reporting bugs and asking for features
 
 Open an issue in this repository or contact the #ask-data-engineering Slack channel.
