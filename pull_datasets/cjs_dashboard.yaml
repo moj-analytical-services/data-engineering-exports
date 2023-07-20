@@ -3,3 +3,6 @@ pull_arns:
   - arn:aws:iam::754256621582:role/cloud-platform-irsa-40eb2bac49e9da21-live
 users:
   - alpha_user_lauraknowles
+  - alpha_user_grahamison
+  - alpha_user_katharinebreeze
+  - alpha_user_rolakeo-mojo
