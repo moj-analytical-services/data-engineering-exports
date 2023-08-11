@@ -36,7 +36,11 @@ Then install the pre-commit hooks with `pre-commit install`.
 2. Log in to the Pulumi backend with `pulumi login s3://data-engineering-pulumi.analytics.justice.gov.uk`.
 3. Run `pulumi stack select` and pick `data-engineering-exports`.
 4. Run `pulumi stack` to check you can see what's currently deployed.
-5. Run `pulumi preview` to check the resources look correct. Use the `--diff` flag to see details. You may see changes to update the local archive path, which can be ignored.
+5. Run `pulumi preview` to check the resources look correct. Use the `--diff` flag to see details.
+
+You may see changes to update the local archive path, which can be ignored. If you are using a different version of `pulumi-aws` to the current deplyment you may see changes relating to the provider, you can avoid these by installing the specific version curently in use, for example, `pip install --force-reinstall pulumi-aws==5.40.0`.
+
+
 6. Deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441)).
 
 You may also need to set `export PULUMI_CONFIG_PASSPHRASE=""` if you've changed this for other projects.
