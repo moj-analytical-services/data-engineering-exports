@@ -139,3 +139,5 @@ dmypy.json
 
 # data
 *.csv
+
+/.idea
