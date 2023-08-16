@@ -1,8 +1,8 @@
 name: cjs-dashboard
 pull_arns:
-  - arn:aws:iam::754256621582:role/cloud-platform-irsa-40eb2bac49e9da21-live
-  - arn:aws:iam::754256621582:role/cloud-platform-irsa-3b969a65f8b52d3c-live
-  - arn:aws:iam::754256621582:role/cloud-platform-irsa-52943abf01a37496-live
+  - arn:aws:iam::754256621582:role/cloud-platform-irsa-40eb2bac49e9da21-live # Demo env.
+  - arn:aws:iam::754256621582:role/cloud-platform-irsa-3b969a65f8b52d3c-live # Dev env.
+  - arn:aws:iam::754256621582:role/cloud-platform-irsa-52943abf01a37496-live # Prod env.
 users:
   - alpha_user_lauraknowles
   - alpha_user_grahamison
