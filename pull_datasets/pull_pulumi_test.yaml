@@ -1,0 +1,5 @@
+name: pull-test
+pull_arns:
+  - arn:aws:iam::684969100054:role/restricted-admin
+users:
+  - alpha_user_murad-ali-moj
