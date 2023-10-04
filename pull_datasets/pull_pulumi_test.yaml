@@ -1,5 +1,0 @@
-name: pull-test
-pull_arns:
-  - arn:aws:iam::684969100054:role/k8s-admin-role
-users:
-  - alpha_user_murad-ali-moj
