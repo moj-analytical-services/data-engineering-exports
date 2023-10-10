@@ -38,4 +38,3 @@ jobs:
         with:
           command: up
           stack-name: "data-engineering-exports"
-          cloud-url: s3://data-engineering-pulumi.analytics.justice.gov.uk
