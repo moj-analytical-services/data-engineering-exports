@@ -40,6 +40,10 @@ for file in pull_config_files:
     name = dataset["name"]
     pull_arns = dataset["pull_arns"]
     users = dataset["users"]
+    if "is_writable" in dataset.keys():
+        writable = dataset["allow_push"]
+    else:
+        writable = False
 
     pull_bucket = Bucket(
         name=f"mojap-{name}",
@@ -47,7 +51,7 @@ for file in pull_config_files:
     )
 
     # Add bucket policy allowing the specified arn to read
-    bucket_policy = Output.all(bucket_arn=pull_bucket.arn, pull_arns=pull_arns).apply(
+    bucket_policy = Output.all(bucket_arn=pull_bucket.arn, pull_arns=pull_arns, allow_push=writable).apply(
         pull.create_pull_bucket_policy
     )
     BucketPolicy(
