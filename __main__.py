@@ -51,7 +51,11 @@ for file in pull_config_files:
     )
 
     # Add bucket policy allowing the specified arn to read
-    bucket_policy = Output.all(bucket_arn=pull_bucket.arn, pull_arns=pull_arns, allow_push=writable).apply(
+    bucket_policy = Output.all(
+        bucket_arn=pull_bucket.arn,
+        pull_arns=pull_arns,
+        allow_push=writable
+    ).apply(
         pull.create_pull_bucket_policy
     )
     BucketPolicy(
