@@ -1,5 +1,5 @@
 name: prison_performance
-target_bucket: performance-hub-land
+target_bucket: performance-hub-land-production
 users:
   - alpha_user_ERowland1
   - alpha_user_graemechunter
