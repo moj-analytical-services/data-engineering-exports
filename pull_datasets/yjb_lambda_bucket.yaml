@@ -1,0 +1,11 @@
+name: youth-justice-board
+pull_arns:
+  - arn:aws:iam::066012302209:role/service-role/S3-cross-account-replication-role-7niuq7ek
+users:
+  - alpha_user_alexkey-yjb
+  - alpha_user_orianapdm
+  - alpha_user_rowanyjb
+  - alpha_user_strevs81
+  - alpha_user_Rhian-Manley
+allow_push:
+  - True
