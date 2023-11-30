@@ -40,7 +40,7 @@ for file in pull_config_files:
     name = dataset["name"]
     pull_arns = dataset["pull_arns"]
     users = dataset["users"]
-    if "is_writable" in dataset.keys():
+    if "allow_push" in dataset.keys():
         writable = dataset["allow_push"]
     else:
         writable = False
