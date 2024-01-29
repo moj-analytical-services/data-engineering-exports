@@ -2,5 +2,6 @@ name: nca_siezed_media
 target_bucket: damo-central-production-moj-hmpps-data-dirty-bucket
 users:
   - alpha_user_vonbraunbates
-  - alpha_user_calumabarnett
-paperwork: https://docs.google.com/document/d/12IfSMlrz2XtoGu-3MsrlrYYMs8sNUHZm/edit?usp=sharing&ouid=112879140780717566574&rtpof=true&sd=true
+  - alpha_user_mattfunnell
+  - alpha_user_foufoulides
+paperwork: https://drive.google.com/file/d/1uKwwfv0ledNTFRubBwxTENK1dQZyASce/view?usp=drive_link
