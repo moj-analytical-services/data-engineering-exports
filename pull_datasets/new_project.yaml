@@ -1,0 +1,12 @@
+  name: moj-wmp-proj
+  bucket: moj-wmp
+  # pull_arns:
+  #   - role1
+  #   - role2
+  users:
+    - alpha_user_ani-setchi
+    - alpha_user_maryboeker
+    - alpha_user_simonbutterworth
+  # allow_push:
+  #   - True
+  # paperwork: link to DPIA
