@@ -1,5 +1,4 @@
-  name: moj-wmp-proj
-  bucket: moj-wmp
+  name: wmp-proj
   # pull_arns:
   #   - role1
   #   - role2
