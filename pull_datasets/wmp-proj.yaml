@@ -1,11 +1,12 @@
   name: wmp-proj
-  # pull_arns:
-  #   - role1
-  #   - role2
+  pull_arns:
+     - arn:aws:iam::778619575109:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_WMP-CST_3d6d3f547e7aa825
   users:
     - alpha_user_ani-setchi
     - alpha_user_maryboeker
     - alpha_user_simonbutterworth
-  # allow_push:
-  #   - True
-  # paperwork: link to DPIA
+  allow_push:
+    - True
+  paperwork:
+    - DPIA reference no. 5468
+    - Movement form reference no. 8900
