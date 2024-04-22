@@ -1,8 +1,7 @@
-name: mlflow-artifacts-worflow
+name: mlflow_sandbox_artifacts
 pull_arns:
   - arn:aws:iam::684969100054:role/MLFlowServerRole
 users:
-  - alpha_user_mshodge
-  - alpha_user_pbasker23
+  - alpha_user_priyabasker23
 allow_push:
   - True
