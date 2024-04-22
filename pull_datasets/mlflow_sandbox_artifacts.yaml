@@ -1,4 +1,4 @@
-name: mlflow_sandbox_artifacts
+name: mlflow-sandbox-artifacts
 pull_arns:
   - arn:aws:iam::684969100054:role/MLFlowServerRole
 users:
