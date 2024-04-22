@@ -1,0 +1,8 @@
+name: mlflow-artifacts-worflow
+pull_arns:
+  - arn:aws:iam::684969100054:role/MLFlowServerRole
+users:
+  - alpha_user_mshodge
+  - alpha_user_pbasker
+allow_push:
+  - True
