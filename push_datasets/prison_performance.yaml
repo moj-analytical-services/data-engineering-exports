@@ -2,13 +2,9 @@ name: prison_performance
 target_bucket: performance-hub-land-production
 users:
   - alpha_user_ERowland1
-  - alpha_user_graemechunter
-  - alpha_user_andriasarri
   - alpha_user_CMedhurst
-  - alpha_user_Hannah-Waterfield
-  - alpha_user_wmartin-gss
-  - alpha_user_ampbrown
   - alpha_user_jamesdeason
-  - alpha_user_Eve-Dolling
   - alpha_user_SullivanJ123
-  
+  - alpha_user_hayley-purser
+  - alpha_user_Eve-Dolling
+
