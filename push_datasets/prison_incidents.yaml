@@ -1,5 +1,8 @@
 name: prison_incidents
 target_bucket: performance-hub-land-production
 users:
-  - alpha_user_arjunkhetia66
   - alpha_user_zeeshansy
+  - alpha_user_jmitchy95
+  - alpha_user_AllanCox
+  - alpha_user_julietterochelle
+  - alpha_user_tobiasnottingham
