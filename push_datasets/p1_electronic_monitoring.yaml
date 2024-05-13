@@ -1,0 +1,7 @@
+name: p1_electronic_monitoring
+target_bucket: tct-339712706964-prearrivals
+users:
+  - alpha_user_vonbraunbates
+  - alpha_user_calumabarnett
+  - alpha_user_pricemg
+paperwork: Contact CT Lead data engineer for data movement form.
