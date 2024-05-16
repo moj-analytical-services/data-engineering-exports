@@ -51,10 +51,16 @@ Only use lower case and underscores in your dataset name.
 ```
 
 5. Commit the file and push it to GitHub
-6. Create a new pull request and request a review from the data engineering team
+6. Create a new pull request and request a review from the data engineering team.  Once this is approved, you can merge your PR: this doesn't happen automatically, so don't forget.
+7. Once your changes are in the `main` branch, request a data engineer to `pulumi up` which deploys your changes to the infrastructure.  They will teel you when it's ready.  If you can't see your new role in IAM (in our example it's `export_<<new_project>>-move`) then your changes haven't been deployed.
 
-The data engineering team will check your changes, deploy them and tell you when it's ready.
+## Exporting from your bucket
 
+How often you can export is limited by AWS Lambda, which has a complex rate limiting and burst quota system.  When you upload a file to the export bucket, this triggers a Lambda function to send your file to the recipient and delete it from the export bucket.  If you are likely to export more than ~1,000 files per second please contact data engineering.
+
+How large a file you can export is limited by how the files are sent.  The maximum file size in S3 is 5,000 GB (5 TB): this is the largest file you can store in the bucket.  However, it may not export: the file size limit for a single `PUT` operation is 5 GB.  If you need to export files larger than 5 GB please contact data engineering,
+
+If your project causes `500` or `503` status errors see [here](https://repost.aws/knowledge-center/http-5xx-errors-s3): you may be close to the [limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html) of 3,500 `COPY` or `PUT` operations per second.
 
 ### Exporting data from a push bucket
 
@@ -68,7 +74,7 @@ The owner of the receiving bucket must add permission to their bucket policy for
 
 After you send files to this location they will be copied to your target bucket, then deleted from `mojap-hub-exports`.
 
-## Exporting data from a pull bucket
+### Exporting data from a pull bucket
 
 You will be given a bucket called `mojap-new-project` - the name of your project, prefixed with `mojap` (this means it's managed by data engineering rather than the Analytical Platform team).
 
