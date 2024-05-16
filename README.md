@@ -52,7 +52,7 @@ Only use lower case and underscores in your dataset name.
 
 5. Commit the file and push it to GitHub
 6. Create a new pull request and request a review from the data engineering team.  Once this is approved, you can merge your PR: this doesn't happen automatically, so don't forget.
-7. Once your changes are in the `main` branch, request a data engineer to `pulumi up` which deploys your changes to the infrastructure.  They will teel you when it's ready.  If you can't see your new role in IAM (in our example it's `export_<<new_project>>-move`) then your changes haven't been deployed.
+7. Once your changes are in the `main` branch, request a data engineer to `pulumi up` which deploys your changes to the infrastructure.  They will tell you when it's ready.  If you can't see your new role in IAM (in our example it's `export_<<new_project>>-move`) then your changes haven't been deployed.
 
 ## Exporting from your bucket
 
