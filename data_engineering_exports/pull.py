@@ -3,6 +3,7 @@ from typing import Dict
 from pulumi_aws.iam import (
     GetPolicyDocumentStatementArgs,
     GetPolicyDocumentStatementPrincipalArgs,
+    GetPolicyDocumentStatementConditionArgs,
 )
 from pulumi_aws.iam.get_policy_document import (
     get_policy_document,
@@ -66,6 +67,23 @@ def create_pull_bucket_policy(args: Dict[str, str]) -> AwaitableGetPolicyDocumen
                     ],
                     resources=[bucket_arn],
                 ),
+                GetPolicyDocumentStatementArgs(
+                    effect="Deny",
+                    actions=["s3:*"],
+                    principals=[
+                        GetPolicyDocumentStatementPrincipalArgs(
+                            identifiers=["*"], type="AWS"
+                        )
+                    ],
+                    resources=[bucket_arn, bucket_arn + "/*"],
+                    conditions=[
+                        GetPolicyDocumentStatementConditionArgs(
+                            test="NumericLessThan",
+                            variable="s3:TlsVersion",
+                            values=["1.2"],
+                        ),
+                    ],
+                ),
             ]
         )
     else:
@@ -88,6 +106,23 @@ def create_pull_bucket_policy(args: Dict[str, str]) -> AwaitableGetPolicyDocumen
                         )
                     ],
                     resources=[bucket_arn],
+                ),
+                GetPolicyDocumentStatementArgs(
+                    effect="Deny",
+                    actions=["s3:*"],
+                    principals=[
+                        GetPolicyDocumentStatementPrincipalArgs(
+                            identifiers=["*"], type="AWS"
+                        )
+                    ],
+                    resources=[bucket_arn, bucket_arn + "/*"],
+                    conditions=[
+                        GetPolicyDocumentStatementConditionArgs(
+                            test="NumericLessThan",
+                            variable="s3:TlsVersion",
+                            values=["1.2"],
+                        ),
+                    ],
                 ),
             ]
         )
