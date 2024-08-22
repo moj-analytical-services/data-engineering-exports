@@ -29,6 +29,19 @@ def test_create_pull_bucket_policy():
             "principals": [{"identifiers": ["arn-one", "arn-two"], "type": "AWS"}],
             "resources": ["arn:aws:s3:::test-bucket"],
         },
+        {
+            "actions": ["s3:*"],
+            "conditions": [
+                {
+                    "test": "NumericLessThan",
+                    "variable": "s3:TlsVersion",
+                    "values": ["1.2"],
+                }
+            ],
+            "effect": "Deny",
+            "principals": [{"identifiers": ["*"], "type": "AWS"}],
+            "resources": ["arn:aws:s3:::test-bucket", "arn:aws:s3:::test-bucket/*"],
+        },
     ]
     return Output.all(policy.statements, expected).apply(
         assert_pulumi_output_equals_expected
