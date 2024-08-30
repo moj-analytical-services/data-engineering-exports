@@ -61,7 +61,7 @@ for file in pull_config_files:
     BucketPolicy(
         resource_name=f"{name}-bucket-policy",
         bucket=pull_bucket.id,
-        policy=bucket_policy.json,
+        policy=bucket_policy,
         opts=ResourceOptions(parent=pull_bucket),
     )
 

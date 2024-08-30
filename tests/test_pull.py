@@ -20,30 +20,29 @@ def test_create_pull_bucket_policy():
     )
     expected = [
         {
-            "actions": ["s3:GetObject", "s3:GetObjectAcl", "s3:GetObjectVersion"],
-            "principals": [{"identifiers": ["arn-one", "arn-two"], "type": "AWS"}],
-            "resources": ["arn:aws:s3:::test-bucket/*"],
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": ["s3:GetObjectVersion", "s3:GetObjectAcl", "s3:GetObject"],
+            "Principal": {"AWS": ["arn-one", "arn-two"]},
+            "Resource": "arn:aws:s3:::test-bucket/*",
         },
         {
-            "actions": ["s3:ListBucket"],
-            "principals": [{"identifiers": ["arn-one", "arn-two"], "type": "AWS"}],
-            "resources": ["arn:aws:s3:::test-bucket"],
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Principal": {"AWS": ["arn-one", "arn-two"]},
+            "Resource": "arn:aws:s3:::test-bucket",
         },
         {
-            "actions": ["s3:*"],
-            "conditions": [
-                {
-                    "test": "NumericLessThan",
-                    "variable": "s3:TlsVersion",
-                    "values": ["1.2"],
-                }
-            ],
-            "effect": "Deny",
-            "principals": [{"identifiers": ["*"], "type": "AWS"}],
-            "resources": ["arn:aws:s3:::test-bucket", "arn:aws:s3:::test-bucket/*"],
+            "Sid": "",
+            "Effect": "Deny",
+            "Action": "s3:*",
+            "Principal": "*",
+            "Resource": ["arn:aws:s3:::test-bucket", "arn:aws:s3:::test-bucket/*"],
+            "Condition": {"NumericLessThan": {"s3:TlsVersion": "1.2"}},
         },
     ]
-    return Output.all(policy.statements, expected).apply(
+    return Output.all(policy["Statement"], expected).apply(
         assert_pulumi_output_equals_expected
     )
 
