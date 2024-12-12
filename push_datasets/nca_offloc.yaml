@@ -1,0 +1,8 @@
+name: nca_offloc
+target_bucket: mojap-hub-ingress
+users:
+  - alpha_user_vonbraunbates
+  - alpha_user_calumabarnett
+  - alpha_user_pricemg
+  - alpha_user_gwionap
+paperwork: https://app-uk.onetrust.com/assessment/details/c049b3a7-8b08-45c4-bc63-0b7fcc1bd231
