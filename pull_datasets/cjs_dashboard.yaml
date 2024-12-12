@@ -4,7 +4,7 @@ pull_arns:
   - arn:aws:iam::754256621582:role/cloud-platform-irsa-3b969a65f8b52d3c-live
   - arn:aws:iam::754256621582:role/cloud-platform-irsa-52943abf01a37496-live
 users:
-  - alpha_user_lauraknowles
+  - alpha_user_laura-auburn
   - alpha_user_grahamison
   - alpha_user_rolakeo-mojo
   - alpha_user_joe-dods
