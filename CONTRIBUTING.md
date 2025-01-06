@@ -39,7 +39,7 @@ should return `<path_to_this_repo>/env/bin/python3` instead of your OS's global 
 
 4. Install the packages:
 
-`pip install -r requirements.txt && pip install -r requirements-dev.txt`
+`pip3 install -r requirements.txt && pip3 install -r requirements-dev.txt`
 
 Use the `--force-reinstall` flag to replace an existing version if necessary.  This may take several minutes depending upon your internet connection.
 
@@ -47,7 +47,8 @@ Use the `--force-reinstall` flag to replace an existing version if necessary.  T
 
 ## Access the Pulumi stack
 
-1. Activate the AWS SSO role you use for data engineering: `aws-vault exec <name_of_your_role>` (the details should be in your `~/.aws` folder).
+1. Activate the AWS SSO role you use for data engineering: `aws-vault exec <name_of_your_role>`
+   If you're not sure which profile to use, consult `aws-vault list` or for even more detail, your `~/.aws` folder.
 2. Log in to the Pulumi backend with `pulumi login s3://data-engineering-pulumi.analytics.justice.gov.uk`.
 3. Run `pulumi stack select` and pick `data-engineering-exports`.
 4. Run `pulumi stack` to check you can see what's currently deployed.
