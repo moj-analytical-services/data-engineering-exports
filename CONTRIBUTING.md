@@ -21,18 +21,33 @@ or
 
 ## Pre-requisites
 
-Either set up a new virtual environment:
-`python3 -m venv <env_name>`
-or activate the existing one:
-`source ./env/bin/activate`
-Install the packages. If `which pip` returns an error message about pip not found, use `pip3` instead of `pip` in the followng line:
-`pip install -r requirements.txt && pip install -r requirements-dev.txt`. Use the `--force-reinstall` flag to replace an existing version if necessary.
+1. Clone the repo locally and `cd` to this folder.
 
-Then install the pre-commit hooks with `pre-commit install`.
+2. Set up a new virtual environment:
+`python3 -m venv <env_name>`
+We'll call our environment `env` from here onwards.
+
+3. Activate it:
+
+`source ./env/bin/activate`
+
+Check that it is activated:
+
+`which python3`
+
+should return `<path_to_this_repo>/env/bin/python3` instead of your OS's global python executable (which will be something like `/opt/bin/python3`).
+
+4. Install the packages:
+
+`pip install -r requirements.txt && pip install -r requirements-dev.txt`
+
+Use the `--force-reinstall` flag to replace an existing version if necessary.  This may take several minutes depending upon your internet connection.
+
+5. Then install the pre-commit hooks with `pre-commit install`.
 
 ## Access the Pulumi stack
 
-1. Activate the `restricted-admin-data` AWS role (see [instructions](https://dsdmoj.atlassian.net/wiki/spaces/DE/pages/3862331895/Set+up+AWS+access#Config-file-for-prisons-and-probation) if this isn't already configured).
+1. Activate the AWS SSO role you use for data engineering: `aws-vault exec <name_of_your_role>` (the details should be in your `~/.aws` folder).
 2. Log in to the Pulumi backend with `pulumi login s3://data-engineering-pulumi.analytics.justice.gov.uk`.
 3. Run `pulumi stack select` and pick `data-engineering-exports`.
 4. Run `pulumi stack` to check you can see what's currently deployed.
