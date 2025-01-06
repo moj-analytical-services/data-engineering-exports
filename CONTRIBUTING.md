@@ -47,12 +47,13 @@ Use the `--force-reinstall` flag to replace an existing version if necessary.  T
 
 ## Access the Pulumi stack
 
-1. Activate the AWS SSO role you use for data engineering: `aws-vault exec <name_of_your_role>`
-   If you're not sure which profile to use, consult `aws-vault list` or for even more detail, your `~/.aws` folder.
-2. Log in to the Pulumi backend with `pulumi login s3://data-engineering-pulumi.analytics.justice.gov.uk`.
-3. Run `pulumi stack select` and pick `data-engineering-exports`.
-4. Run `pulumi stack` to check you can see what's currently deployed.
-5. Run `pulumi preview` to check the resources look correct. Use the `--diff` flag to see details.
+1. Activate the AWS SSO role you use to access `analytical-platform-data-production`:
+    `aws-vault exec <name_of_your_role>`
+   If you're not sure which profile to use, consult `aws-vault list` or for even more detail, your `~/.aws/config` file.
+3. Log in to the Pulumi backend with `pulumi login --cloud-url s3://data-engineering-pulumi.analytics.justice.gov.uk`.
+4. Run `pulumi stack select` and pick `data-engineering-exports`.
+5. Run `pulumi stack` to check you can see what's currently deployed.
+6. Run `pulumi preview` to check the resources look correct. Use the `--diff` flag to see details.
 
 You may see changes to update the local archive path, which can be ignored. If you are using a different version of `pulumi-aws` to the current deplyment you may see changes relating to the provider, you can avoid these by installing the specific version curently in use, for example, `pip install --force-reinstall pulumi-aws==5.40.0`.
 
