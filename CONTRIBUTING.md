@@ -19,7 +19,7 @@ or
 
 6. Merge to main **and pull to your local machine** (since pulumi will operate on the locally-held version of your code).
 
-## Pre-requisites
+## Pulumi pre-requisites
 
 1. Clone the repo locally and `cd` to this folder.
 
@@ -57,14 +57,15 @@ Use the `--force-reinstall` flag to replace an existing version if necessary.  T
 
 You may see changes to update the local archive path, which can be ignored. If you are using a different version of `pulumi-aws` to the current deplyment you may see changes relating to the provider, you can avoid these by installing the specific version curently in use, for example, `pip install --force-reinstall pulumi-aws==5.40.0`.
 
+## Deploying changes
 
-6. Deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441)).
+Pre-SSO, data enigneers had the permissions to deploy changes.  Now you will need to ask someone from the Analytical Platform team to do so in `#ask-analytical-platform` on Slack.  As usual, they will deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441)).
 
-You may also need to set `export PULUMI_CONFIG_PASSPHRASE=""` if you've changed this for other projects.
+## QA
 
-7. Ask the user to test the export. This should include making sure the destination system gets the test file, as we can't see the destination buckets ourselves.
+After the stack is live, ask the user to test the export. This should include making sure the destination system gets the test file, as we can't see the destination buckets ourselves.
 
-## Running tests
+## Running Pulumi tests
 
 There are normal unit tests that mock Pulumi resources. There is also an end-to-end test that uses Localstack, which creates a mock AWS environment. The test infrastructure should behave like real resources, but none of it needs access to a real AWS account.
 
