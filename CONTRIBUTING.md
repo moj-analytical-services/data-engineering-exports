@@ -45,7 +45,7 @@ Use the `--force-reinstall` flag to replace an existing version if necessary.  T
 
 5. Then install the pre-commit hooks with `pre-commit install`.
 
-## Access the Pulumi stack
+## Previewing changes to the Pulumi stack
 
 1. Activate the AWS SSO role you use to access `analytical-platform-data-production`:
     `aws-vault exec <name_of_your_role>`
@@ -59,9 +59,9 @@ You may see changes to update the local archive path, which can be ignored. If y
 
 ## Deploying changes
 
-Pre-SSO, data enigneers had the permissions to deploy changes.  Now you will need to ask someone from the Analytical Platform team to do so in `#ask-analytical-platform` on Slack.  As usual, they will deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441)).
+Pre-SSO, data engineers had the permissions to deploy changes.  Now you will need to ask someone from the Analytical Platform team to do so in `#ask-analytical-platform` on Slack.  As usual, they will deploy the changes with `pulumi up` (there's a ticket to [automate the deployment](https://dsdmoj.atlassian.net/browse/PDE-1441)).
 
-## QA
+## Testing deployment
 
 After the stack is live, ask the user to test the export. This should include making sure the destination system gets the test file, as we can't see the destination buckets ourselves.
 
