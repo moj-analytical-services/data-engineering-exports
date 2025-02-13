@@ -1,0 +1,5 @@
+name: model_export__delius_search
+target_bucket: analytical-platform-compute
+keep_files: true
+users:
+  - alpha_user_mshodge
