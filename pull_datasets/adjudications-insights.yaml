@@ -3,10 +3,8 @@ pull_arns:
   - arn:aws:iam::754256621582:role/cloud-platform-irsa-28885d6e937db127-live
   - arn:aws:iam::754256621582:role/cloud-platform-irsa-3dbf20f0e887e4fe-live
 users:
-  - alpha_user_lauratraceymoj
-  - alpha_user_lucypitches
+  - alpha_user_laura-auburn
   - alpha_user_rob-mcnaughter
-  - alpha_user_np4465
 paperwork:
   - Data Movement Form (https://app-uk.onetrust.com/assessment/details/fddd5ce1-7617-4bba-99d2-07131a983084)
   - DPIA (https://app-uk.onetrust.com/assessment/details/25cc2bf0-e06b-4c68-97bb-cacecc35832e)
