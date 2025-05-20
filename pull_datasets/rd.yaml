@@ -1,6 +1,0 @@
-name: rd
-pull_arns:
-  - arn:aws:iam::754256621582:role/cloud-platform-irsa-b45f871454ba8d4a-live
-users:
-  - alpha_user_townxelliot
-  - alpha_user_chloepugh
