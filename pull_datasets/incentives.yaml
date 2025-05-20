@@ -2,6 +2,6 @@ name: incentives
 pull_arns:
   - arn:aws:iam::754256621582:role/hmpps-incentives-prod-analytical-platform-live
 users:
-  - alpha_user_foufoulides
-  - alpha_user_rpomissenden
-  - alpha_user_rossken
+  - alpha_user_laura-auburn
+  - alpha_user_rob-mcnaughter
+  - alpha_user_rogerbrownmoj
