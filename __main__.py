@@ -71,7 +71,7 @@ for file in pull_config_files:
     )
     for user in users:
         RolePolicy(
-            resource_name=user + "_exports_pull",
+            resource_name=user + "_" + name + "_exports_pull",
             policy=role_policy.json,
             role=user,
             name=f"hub-exports-pull-{name}",
