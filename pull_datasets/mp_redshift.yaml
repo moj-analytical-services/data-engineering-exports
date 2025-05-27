@@ -4,4 +4,4 @@
    - arn:aws:iam::289153439536:role/AWSGlueServiceRoleAbsenceCrawler
    
  users:
-   - alpha_user_simonytta
+   - alpha_user_jhpyke # I am not the owner, but owner does not exist so temp moving to me while I investigate if this can be removed.
