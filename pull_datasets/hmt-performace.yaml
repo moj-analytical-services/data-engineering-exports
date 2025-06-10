@@ -1,0 +1,5 @@
+name: hmt-performance
+pull_arns:
+  - arn:aws:lambda:eu-north-1:390844756740:function:bucket-mover-1
+users:
+  - alpha_user_jhpyke
