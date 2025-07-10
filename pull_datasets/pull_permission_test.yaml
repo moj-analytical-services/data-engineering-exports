@@ -5,3 +5,5 @@ users:
   - alpha_user_jhpyke
 allow_push:
   - True
+bucket_versioning:
+  - True

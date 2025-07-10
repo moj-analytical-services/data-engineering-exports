@@ -44,11 +44,22 @@ for file in pull_config_files:
         writable = dataset["allow_push"]
     else:
         writable = False
+    if "bucket_versioning" in dataset.keys():
+        bucket_versioning = dataset["bucket_versioning"]
+    else:
+        bucket_versioning = False
 
-    pull_bucket = Bucket(
-        name=f"mojap-{name}",
-        tagger=tagger,
-    )
+    if bucket_versioning:
+        pull_bucket = Bucket(
+            name=f"mojap-{name}",
+            tagger=tagger,
+            versioning={"enabled": True, },
+        )
+    else:
+        pull_bucket = Bucket(
+            name=f"mojap-{name}",
+            tagger=tagger,
+        )
 
     # Add bucket policy allowing the specified arn to read
     bucket_policy = Output.all(
