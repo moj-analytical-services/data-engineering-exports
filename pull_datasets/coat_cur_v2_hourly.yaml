@@ -11,5 +11,7 @@
      - alpha_user_connormaglynn
   allow_push:
     - True
+  bucket_versioning:
+    - True
   paperwork:
     - DPIA reference no. 12883
