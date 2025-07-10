@@ -48,12 +48,12 @@ for file in pull_config_files:
         bucket_versioning = dataset["bucket_versioning"]
     else:
         bucket_versioning = False
-    
+
     if bucket_versioning:
         pull_bucket = Bucket(
             name=f"mojap-{name}",
             tagger=tagger,
-            versioning = {"enabled": True,},
+            versioning={"enabled": True, },
         )
     else:
         pull_bucket = Bucket(
