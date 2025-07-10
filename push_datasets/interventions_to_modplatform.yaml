@@ -1,4 +1,0 @@
-name: probation_referrals_dump
-target_bucket: probation-referrals-datawarehouse # this is in Modernisation Platform
-users:
-  - alpha_user_sldblog
