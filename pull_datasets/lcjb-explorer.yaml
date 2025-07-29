@@ -1,6 +1,6 @@
 name: lcjb-explorer
 pull_arns:
-  - arn:aws:iam::754256621582:role/cloud-platform-irsa-9506f291e38addd0-live
+  - arn:aws:iam::593291632749:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_AdministratorAccess_48361bdb022cb721
 users:
   - alpha_user_hannah-faculty
   - alpha_user_adp-faculty

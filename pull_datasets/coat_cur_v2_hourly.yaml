@@ -1,0 +1,17 @@
+  name: coat-cur-v2-hourly
+  pull_arns:
+     - arn:aws:iam::279191903737:role/glue_cur_role
+  users:
+     - alpha_user_tamsinforbes
+     - alpha_user_stefanskyhristov
+     - alpha_user_antonybishop
+     - alpha_user_ratna-kurapati-moj
+     - alpha_user_andyrogers1973
+     - alpha_user_abachleda-baca
+     - alpha_user_connormaglynn
+  allow_push:
+    - True
+  bucket_versioning:
+    - True
+  paperwork:
+    - DPIA reference no. 12883
