@@ -3,7 +3,6 @@ pull_arns:
   - arn:aws:iam::586794462316:role/s3-cross-account-replication-lambda-role
 users:
   - alpha_user_alexkey-yjb
-  - alpha_user_orianapdm
   - alpha_user_Rhian-Manley
 allow_push:
   - True
