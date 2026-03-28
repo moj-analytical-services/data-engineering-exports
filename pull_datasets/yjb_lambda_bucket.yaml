@@ -4,5 +4,6 @@ pull_arns:
 users:
   - alpha_user_alexkey-yjb
   - alpha_user_Rhian-Manley
+  - alpha_user_luciewoellenstein44
 allow_push:
   - True
