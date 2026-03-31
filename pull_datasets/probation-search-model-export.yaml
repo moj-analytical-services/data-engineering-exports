@@ -1,7 +1,0 @@
-name: probation-search-model-export
-pull_arns:
-  - arn:aws:iam::381491960855:role/hmpps-probation-search-dev-sagemaker-exec-role
-  - arn:aws:iam::992382429243:role/hmpps-probation-search-preprod-sagemaker-exec-role
-  - arn:aws:iam::992382429243:role/hmpps-probation-search-prod-sagemaker-exec-role
-users:
-  - alpha_user_mshodge
