@@ -1,0 +1,7 @@
+name: ppud-lf-dev
+bucket: ppud-lf-dev-bucket
+users:
+  - alpha_AntonyJScott
+paperwork: using toy data
+pull_arns:
+  - arn:aws:iam::593291632749:role/AWSReservedSSO_modernisation-platform-data-eng_499410b42334a7d7
