@@ -17,17 +17,17 @@ jobs:
       - name: Check for flake8 config
         run: |
           if [ -e ./.flake8 ]; then
-              echo "A .flake8 config file has been found in the root of this branch and will be used in this workflow."
+              echo "A .flake8 config file was found in the root of this branch and will be used in this workflow."
           else
-              echo "No .flake8 config file has been found in the root of this branch and so the standard Data Engineering config will used."
+              echo "No .flake8 config file was found in the root of this branch and so the standard Data Engineering config will used."
               curl https://moj-analytical-services.github.io/.github/configs/data-engineering/flake8 > .flake8
           fi
       - name: Check for yamllint config
         run: |
           if [ -e ./.yamllint ]; then
-              echo "A .yamllint config file has been found in the root of this branch and will be used in this workflow."
+              echo "A .yamllint config file was found in the root of this branch and will be used in this workflow."
           else
-              echo "No .yamllint config file has been found in the root of this branch and so the standard Data Engineering config will used."
+              echo "No .yamllint config file was found in the root of this branch and so the standard Data Engineering config will used."
               curl https://moj-analytical-services.github.io/.github/configs/data-engineering/yamllint > .yamllint
           fi
       - name: Install dependencies
