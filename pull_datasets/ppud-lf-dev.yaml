@@ -1,6 +1,6 @@
 name: ppud-lf-dev
 users:
-  - alpha_AntonyJScott
+  - alpha_user_antonyjscott
 paperwork: using toy data
 pull_arns:
   - arn:aws:iam::593291632749:role/AWSReservedSSO_modernisation-platform-data-eng_499410b42334a7d7
