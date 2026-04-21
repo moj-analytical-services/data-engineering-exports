@@ -1,5 +1,5 @@
 name: hmt-performance
 pull_arns:
-  - arn:aws:lambda:eu-north-1:390844756740:function:bucket-mover-1
+  - arn:aws:iam::593291632749:role/data-engineering-hmt-reset
 users:
   - alpha_user_jhpyke
