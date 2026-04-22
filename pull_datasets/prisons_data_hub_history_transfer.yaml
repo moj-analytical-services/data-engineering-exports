@@ -1,0 +1,12 @@
+name: nomis-history-to-data-hub
+pull_arns:
+  - arn:aws:iam::004723187462:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_modernisation-platform-data-eng_2743193c0668d546
+bucket: prisons_data_hub_history_transfer
+users:
+  - alpha_user_andrewc-moj
+  - arn:aws:iam::593291632749:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_modernisation-platform-data-eng_499410b42334a7d7
+paperwork:
+  - DPIA covering transfer of data - DPIA 17056 = https://app-uk.onetrust.com/assessment/details/1806e54b-2387-4953-bc78-d4e2a0901532
+  - Full NOMIS data is already stored on the destination account (004723187462) 
+  - Data Hub and AP integration is covered by DPIA https://app-uk.onetrust.com/assessment/details/1d701b77-8040-41b9-98be-ee968c3adac8
+
